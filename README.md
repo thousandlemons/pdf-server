@@ -92,7 +92,7 @@ After creating a `Book` entry,
 1. Select "Process book" in the "Action" dropdown menu
 1. Click "GO"
 
-This will take from a few seconds to 10+ minutes for most cases, depending on the structure and the length of the book. Most importantly, ==DO NOT close the browser tab or shut down the server while a book is being processed==. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
+This will take from a few seconds to 10+ minutes for most cases, depending on the structure and the length of the book. Most importantly, <mark>DO NOT close the browser tab or shut down the server while a book is being processed</mark>. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
 
 You can view the progress of the process in the terminal where you started the Django server.
 
