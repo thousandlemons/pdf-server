@@ -1,6 +1,6 @@
 # PDF Ebook Text Extraction & Cleaning Tool wtih RESTful Server
 
-## Structure of This Documentation
+## Structure of This Document
 
 * [Introduction](#intro)
 * [Getting Started](#system-setup)
