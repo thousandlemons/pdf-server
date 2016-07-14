@@ -137,7 +137,7 @@ class Cleaner:
         remove_digits,
         remove_single_letter_words,
         remove_two_letter_words,
-        remove_multipcle_whitespace,
+        remove_multiple_whitespace,
         remove_multiple_newline,
         lemmatize
     ]
