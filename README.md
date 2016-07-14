@@ -35,7 +35,7 @@ The purpose of this project is to provide a RESTful backend and an admin site to
 
 The built-in cleaner performs the following operations sequentially on the extracted texts:
 
-1. Perform known replacements (e.g. "ﬁ" --> "fi")
+1. Perform known replacements (e.g. "ﬁ" --> "fi"; if you don't see any difference, try to copy the first "ﬁ" as TWO letters, "f" and "i". You will realize you can't, because "ﬁ" is actually ONE unicode character)
 1. Replace non-ascii characters with underscore ("_")
 1. Remove all URIs
 1. Remove all emails
