@@ -65,6 +65,10 @@ CUSTOMIZED_STOP_WORDS = MYSQL_STOP_WORDS + [
 
 KNOWN_REPLACEMENTS = [
     ('ﬁ', 'fi'),
+    ('ﬀ', 'ff'),
+    ('ﬂ', 'fl'),
+    ('ﬃ', 'ffi'),
+    ('ﬄ', 'ffl')
 ]
 
 

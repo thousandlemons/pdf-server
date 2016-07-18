@@ -6,4 +6,4 @@ Pillow
 nltk
 beautifulsoup4
 python-slugify
-django-rest-swagger
+django-rest-swagger==0.3.7
