@@ -55,9 +55,14 @@ You may customize the text cleaning procedure by adding/removing individual step
 1. Clone the project
 1. Install python dependencies: </br> `$ pip install -r requirements.txt`
 1. Download [WordNet data for NLTK](http://www.nltk.org/data.html)
-1. *(For Ubuntu Users ONLY)* Install package `libjpeg-dev` </br> `$ sudo apt-get install libjpeg-dev`
 1. Setup your own database and update the connection configuration in `settings.py`, then migrate.
 1. Run the development server <br> `$ python3 manage.py runserver`
+
+The following additional steps are **for Ubuntu users ONLY**:
+
+1. Install package `libjpeg-dev` </br> `$ sudo apt-get install libjpeg-dev`
+1. Install package `libfreetype6-dev` </br> `$ sudo apt-get install libfreetype6-dev`
+1. Reinstall `pillow` </br> `$ pip uninstall pillow`</br> `$ pip install pillow`
 
 ## <a name="admin-site" style="color: #000;"></a> Admin Site
 
