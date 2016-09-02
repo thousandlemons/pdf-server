@@ -51,7 +51,7 @@ You may customize the text cleaning procedure by adding/removing individual step
 
 ## <a name="system-setup" style="color: #000;"></a> Getting Started
 
-1. Install [Pyhton 3](https://www.python.org/downloads/)
+1. Install [Python 3](https://www.python.org/downloads/)
 1. Clone the project
 1. Install python dependencies: </br> `$ pip install -r requirements.txt`
 1. Download [WordNet data for NLTK](http://www.nltk.org/data.html)
@@ -107,12 +107,14 @@ You can view the progress of the process in the terminal where you started the D
 
 The docs and an emulated client are available at `http://<your-domain>/docs/`
 
-The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are to sub-group of API endpoints: `Book` and `Section`.
+The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are four sub-groups of API endpoints: `Book`, `Section`, `Version` and `Content`.
 
 | Group | URL |
 | --- | --- | 
 | [Book](#api-book) | `/book` 
 | [Section](#api-section) | `/section`
+| [Version](#api-version) | `/version`
+| [Content](#api-content) | `/content`
 
 ### <a name="api-book" style="color: #000;"></a> Book
 
@@ -184,23 +186,19 @@ Response example:
 ```json
 {
 	"title": "My Sample Handbook",
-	"slugified": "my-sample-handbook",
 	"id": 25,
 	"children": [
 		{
 			"title": "Chapter 1",
-			"slugified": "chapter-1",
 			"id": 26,
 			"children": [
 				{
 					"title": "Section 1.1",
-					"slugified": "section-1-1",
 					"id": 27,
 					"children": []
 				},
 				{
 					"title": "Section 1.2",
-					"slugified": "section-1-2",
 					"id": 28,
 					"children": []
 				}
@@ -208,7 +206,6 @@ Response example:
 		},
 		{
 			"title": "Chapter 2",
-			"slugified": "chapter-2",
 			"id": 29,
 			"children": []
 		}
@@ -221,19 +218,16 @@ This is a nested, recursive JSON that represents the table of content tree. Each
 | Field | Type | Explanation | 
 | --- | --- | --- | 
 | `title` | `string` | The title of the section
-| `slugified` | `string` | The slugified title of the section
 | `id` | `int` | The id of the section
 | `children` | `array` | An array of immediate children nodes of the current node  
 
 ### <a name="api-section" style="color: #000;"></a> Section
 
-| Endpoint | URL | 
-| --- | --- | 
-| [Detail](#section-detail) | `/detail/{pk}/` 
-| [Children](#section-children) | `/children/{pk}/` 
-| [Word Cloud](#section-wordcloud) | `/wordcloud/{pk}/` 
-| [Content](#section-content) | `/content/{pk}/` 
-| [Aggregate Content](#section-content-aggregate) | `/content/{pk}/aggregate/` 
+| Endpoint | URL | Method |
+| --- | --- | --- |
+| [Detail](#section-detail) | `/detail/{pk}/` | GET |
+| [Children](#section-children) | `/children/{pk}/` | GET |
+| [Word Cloud](#section-wordcloud) | `/wordcloud/{pk}/` | GET |
 
 #### <a name="section-detail" style="color: #000;"></a> Detail
 
@@ -276,7 +270,69 @@ Parameters in URL:
 
 The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud image generated based on the aggregated text of the section itself and all its descendents in the TOC tree.
 
-#### <a name="section-content" style="color: #000;"></a> Content 
+### <a name="api-version" style="color: #000;"></a> Version
+
+| Endpoint | URL | Method | Access permission 
+| --- | --- | --- | --- |
+| [List](#version-list) | `/list` | GET | None
+| [Detail](#version-detail) | `/list/{pk}/` | GET | None
+| [Create Version](#version-create) | `/create/{pk}/` | POST | Admin and version author 
+| [Update Version](#version-update) | `/update/{pk}/` | POST | Admin and version author
+| [Delete Version](#version-delete) | `/delete/{pk}/` | POST | Admin and version author
+
+#### <a name="version-list" style="color: #000;"></a> List
+
+Response example:
+
+```json
+[
+	{
+		"id": 1,
+		"version_name": "Cleaned text for human readers"
+		"created_by": "admin"
+		"timestamp": "2016-09-02 20:00:00"
+	}
+	{
+		"id": 2,
+		"version_name": "Cleaned text for machine"
+		"created_by": "admin"
+		"timestamp": "2016-09-02 21:00:00"
+	}
+]
+```
+
+The response is an array of "Version"s.
+
+#### <a name="version-detail" style="color: #000;"></a> Detail
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `pk` | `int` | The id of the version
+
+Response example:
+
+```json
+{
+	"id": 1,
+	"version_name": "Cleaned text for human readers"
+	"created_by": "admin"
+	"timestamp": "2016-09-02 20:00:00"
+}
+```
+
+The response is a single element of the array returned by the List API above.
+
+### <a name="api-content" style="color: #000;"></a> Content
+
+| Endpoint | URL | Method | Access permission 
+| --- | --- | --- | --- |
+| [Get Content](#content-get) | `/get/{pk}/` | GET | None | 
+| [Get Aggregate Content](#content-aggregate) | `/get/{pk}/aggregate/` | GET | None |
+| [Create Content](#content-post) | `/create/{pk}/` | POST | Admin and version creator |
+
+#### <a name="content-get" style="color: #000;"></a> Get Content 
 
 Parameters in URL:
 
@@ -296,7 +352,7 @@ The response includes ONLY the immediate text of the section itself.
 
 Also please note that the texts are AFTER the entire text cleaning & lemmatization procedure.
 
-#### <a name="section-content-aggregate" style="color: #000;"></a> Aggregate Content
+#### <a name="content-aggregate" style="color: #000;"></a> Get Aggregate Content
 
 Parameters in URL:
 
