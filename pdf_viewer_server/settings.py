@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'api',
     'book',
     'section',
+	'content',
+	'version',
 ]
 
 MIDDLEWARE_CLASSES = [
