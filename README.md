@@ -6,24 +6,27 @@
 * [Getting Started](#system-setup)
 * [Admin Site](#admin-site)
 * [RESTful API](#api) 
-* [How to Contribute](#further-dev)
+
 
 ## <a name="intro" style="color: #000;"> Introduction </a>
 
-### Context
+### Background
 
 PDF ebooks usually have table of content (TOC). Hence, the texts in a PDF ebook are naturally in a certain hierarchy. Such text and hierarchy information extracted from PDF ebooks can be used for research in machine learning (especially hierarchical text classification) and natural language processing.
+
+The goal of this project is to provide a tool to manage and maintain a huge database of texts extracted from PDF ebooks and allow users to access and upload data through RESTful API endpoints. This project enable easy sharing and hence facilitates collaboration among researchers in a team, or across different teams.
 
 ### Project Scope
 
 The purpose of this project is to provide a RESTful backend and an admin site to 
 
-* Organize and process PDF files
-* Extract table of content (TOC) tree and store it in a relational database
-* Extract cleaned and lemmatized plain text
-* Maintain the hierarchical structure of the extracted texts according to the (TOC)
+* Organize and manage PDF ebooks
+* Extract TOC hierarchy and section texts from PDF ebooks
+* Store all data extracted from PDF ebooks in relational databases
 * Generate WordCloud images for all chapters, sections, and sub-sections
-* Access the TOC, plain text content (by chapter or section), WordCloud images and more through RESTful APIs
+* Access the TOC, text and more through a handlful of RESTful APIs
+* Post your own version of processed texts of a book/chapter and share with other researchers
+* (*Optional) clean up and lemmatize the extracted texts using the built-in cleaner.
 
 ### Skills & Tools Required
 
@@ -33,7 +36,7 @@ The purpose of this project is to provide a RESTful backend and an admin site to
 
 ### Text Cleaning Techniques
 
-The built-in cleaner performs the following operations sequentially on the extracted texts:
+The built-in cleaner can perform the following operations sequentially on the extracted texts:
 
 1. Perform known replacements (e.g. "ﬁ" --> "fi"; if you don't see any difference, try to copy the first "ﬁ" as TWO letters, "f" and "i". You will realize you can't, because "ﬁ" is actually ONE unicode character)
 1. Replace non-ascii characters with underscore ("_")
@@ -46,12 +49,12 @@ The built-in cleaner performs the following operations sequentially on the extra
 1. Remove redundant whitespace characters
 1. Lemmatize
 
-You may customize the text cleaning procedure by adding/removing individual steps in the `Cleaner` class in `crawler/cleaner.py`. See more in [How to Contribute](#future-dev).
+However, the cleaner is **NOT enabled by default**. You may manually enable the cleaner or customize the cleaning procedure by modifying the source code in the `extractor` package.
 
 
 ## <a name="system-setup" style="color: #000;"></a> Getting Started
 
-1. Install [Pyhton 3](https://www.python.org/downloads/)
+1. Install [Python 3](https://www.python.org/downloads/)
 1. Clone the project
 1. Install python dependencies: </br> `$ pip install -r requirements.txt`
 1. Download [WordNet data for NLTK](http://www.nltk.org/data.html)
@@ -97,9 +100,11 @@ After creating a `Book` entry,
 1. Select "Process book" in the "Action" dropdown menu
 1. Click "GO"
 
-This will take from a few seconds to 10+ minutes for most cases, depending on the structure and the length of the book. Most importantly, <mark>DO NOT close the browser tab or shut down the server while a book is being processed</mark>. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
+This will take from a few seconds to a few minutes for most cases, depending on the structure and the length of the book. It will take a lot longer to process a book if you enable the text cleaner. 
 
-You can view the progress of the process in the terminal where you started the Django server.
+Most importantly, <mark>DO NOT close the browser tab or shut down the server while a book is being processed</mark>. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
+
+You can view the progress in the terminal where you started the Django server.
 
 ## <a name="api" style="color: #000;"></a> RESTful API
 
@@ -107,20 +112,22 @@ You can view the progress of the process in the terminal where you started the D
 
 The docs and an emulated client are available at `http://<your-domain>/docs/`
 
-The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are to sub-group of API endpoints: `Book` and `Section`.
+The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are four sub-groups of API endpoints: `Book`, `Section`, `Version` and `Content`.
 
 | Group | URL |
 | --- | --- | 
 | [Book](#api-book) | `/book` 
 | [Section](#api-section) | `/section`
+| [Version](#api-version) | `/version`
+| [Content](#api-content) | `/content`
 
 ### <a name="api-book" style="color: #000;"></a> Book
 
 | Endpoint | URL | Method | 
 | --- | --- | --- | 
-| [List](#book-list) | `/list/` | GET 
-| [Detail](#book-detail) | `/detail/{pk}/` | GET 
-| [TOC](#book-toc) | `/toc/{pk}/` | GET 
+| [List](#book-list) | `/list/` | GET |
+| [Detail](#book-detail) | `/detail/{pk}/` | GET |
+| [TOC](#book-toc) | `/toc/{pk}/` | GET |
 
 #### <a name="book-list" style="color: #000;"></a> List
 
@@ -128,16 +135,16 @@ Response example:
 
 ```json
 [
-  {
-    "id": 2,
-    "title": "My Sample Handbook",
-    "root_section": 25
-  },
-  {
-    "id": 3,
-    "title": "My Sample Textbook",
-    "root_section": 72
-  }
+	{
+		"id": 2,
+		"title": "My Sample Handbook",
+		"root_section": 25
+	},
+	{
+		"id": 3,
+		"title": "My Sample Textbook",
+		"root_section": 72
+	}
 ]
 ```
 
@@ -145,62 +152,56 @@ More details on the fields:
 
 | Field | Type | Explanation | 
 | --- | --- | --- | 
-| `id` | `int` | The id of the book
-| `title` | `string` | The title of the book
-| `root_section` | `int` | The id of the root section that represents the entire book
+| `id` | `int` | The id of the book |
+| `title` | `string` | The title of the book |
+| `root_section` | `int` | The id of the root section that represents the entire book |
 
 #### <a name="book-detail" style="color: #000;"></a> Detail
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the book
-
+| `pk` | `int` | The id of the book |
 
 Response example:
 
 ```json
 {
-  "id": 7,
-  "title": "Digital Signal Processing System Analysis and Design",
-  "root_section": 1011
+	"id": 7,
+	"title": "Digital Signal Processing System Analysis and Design",
+	"root_section": 1011
 }
 ```
 
-This is a single element of the list returned by the `/book/list/` API.
+This is a single element of the list returned by the [List](#book-list) API above.
 
 #### <a name="book-toc" style="color: #000;"></a> TOC
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the book
-
+| `pk` | `int` | The id of the book |
 
 Response example:
 
 ```json
 {
 	"title": "My Sample Handbook",
-	"slugified": "my-sample-handbook",
 	"id": 25,
 	"children": [
 		{
 			"title": "Chapter 1",
-			"slugified": "chapter-1",
 			"id": 26,
 			"children": [
 				{
 					"title": "Section 1.1",
-					"slugified": "section-1-1",
 					"id": 27,
 					"children": []
 				},
 				{
 					"title": "Section 1.2",
-					"slugified": "section-1-2",
 					"id": 28,
 					"children": []
 				}
@@ -208,7 +209,6 @@ Response example:
 		},
 		{
 			"title": "Chapter 2",
-			"slugified": "chapter-2",
 			"id": 29,
 			"children": []
 		}
@@ -220,36 +220,31 @@ This is a nested, recursive JSON that represents the table of content tree. Each
 
 | Field | Type | Explanation | 
 | --- | --- | --- | 
-| `title` | `string` | The title of the section
-| `slugified` | `string` | The slugified title of the section
-| `id` | `int` | The id of the section
-| `children` | `array` | An array of immediate children nodes of the current node  
+| `title` | `string` | The title of the section |
+| `id` | `int` | The id of the section |
+| `children` | `array` | An array of immediate children nodes of the current node | 
 
 ### <a name="api-section" style="color: #000;"></a> Section
 
-| Endpoint | URL | 
-| --- | --- | 
-| [Detail](#section-detail) | `/detail/{pk}/` 
-| [Children](#section-children) | `/children/{pk}/` 
-| [Word Cloud](#section-wordcloud) | `/wordcloud/{pk}/` 
-| [Content](#section-content) | `/content/{pk}/` 
-| [Aggregate Content](#section-content-aggregate) | `/content/{pk}/aggregate/` 
+| Endpoint | URL | Method |
+| --- | --- | --- |
+| [Detail](#section-detail) | `/detail/{pk}/` | GET |
+| [Children](#section-children) | `/children/{pk}/` | GET |
+| [Word Cloud](#section-wordcloud) | `/wordcloud/{pk}/` | GET |
 
 #### <a name="section-detail" style="color: #000;"></a> Detail
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
-
+| `pk` | `int` | The id of the section |
 
 Response example:
 
 ```json
 {
 	"title": "Section 1.1",
-	"slugified": "section-1-1",
 	"id": 27,
 	"has_children": false
 }
@@ -259,10 +254,9 @@ Response example:
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
-
+| `pk` | `int` | The id of the section |
 
 The response is an array of "Detail"s in the `/detail/{pk}/` API.
 
@@ -270,50 +264,245 @@ The response is an array of "Detail"s in the `/detail/{pk}/` API.
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation | 
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
+| `pk` | `int` | The id of the section |
 
 The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud image generated based on the aggregated text of the section itself and all its descendents in the TOC tree.
 
-#### <a name="section-content" style="color: #000;"></a> Content 
+### <a name="api-version" style="color: #000;"></a> Version
+
+| Endpoint | URL | Method | Permission | Auth
+| --- | --- | --- | --- | --- |
+| [List](#version-list) | `/list` | GET | None | None
+| [Detail](#version-detail) | `/detail/{pk}/` | GET | None | None
+| [Create](#version-create) | `/create/` | POST | Any user | Basic
+| [Update](#version-update) | `/update/{pk}/` | POST | Version creator | Basic
+| [Delete](#version-delete) | `/delete/{pk}/` | POST | Version creator | Basic
+
+#### <a name="version-list" style="color: #000;"></a> List
+
+Response example:
+
+```json
+[
+	{
+		"id": 1,
+		"name": "Cleaned text for human readers",
+		"created_by": "admin",
+		"timestamp": "2016-09-02 20:00:00"
+	}
+	{
+		"id": 2,
+		"name": "Cleaned text for machine",
+		"created_by": "admin",
+		"timestamp": "2016-09-02 21:00:00"
+	}
+]
+```
+
+The response is an array of "Version"s.
+
+More details on the fields:
+
+| Field | Type | Explanation | 
+| --- | --- | --- | 
+| `id` | `int` | The id of the version
+| `name` | `string` | The name of the version
+| `created_by` | `string` | The user id for the creator of the version
+| `timestamp` | `string` | The timestamp for version creation
+
+#### <a name="version-detail" style="color: #000;"></a> Detail
 
 Parameters in URL:
 
 | Parameter | Type | Explanation 
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
+| `pk` | `int` | The id of the version
 
 Response example:
 
 ```json
 {
-	"content": "processed text content"
+	"id": 1,
+	"name": "Cleaned text for human readers",
+	"created_by": "admin",
+	"timestamp": "2016-09-02 20:00:00"
 }
 ```
 
-The response includes ONLY the immediate text of the section itself.
+The response is a single element of the array returned by the [List](#version-list) API above.
 
-Also please note that the texts are AFTER the entire text cleaning & lemmatization procedure.
+#### <a name="version-create" style="color: #000;"></a> Create
 
-#### <a name="section-content-aggregate" style="color: #000;"></a> Aggregate Content
+Request example:
+
+```json
+{
+	"name": "Cleaned text"
+}
+```
+
+Response example if successful:
+
+```json
+{
+	"id": 3,
+	"name": "Cleaned text for coref",
+	"created_by": "admin",
+	"timestamp": "2016-09-02 22:00:00"
+}
+```
+
+Response if login credentials not accepted:
+
+```
+401 Unauthorized
+```
+
+#### <a name="version-update" style="color: #000;"></a> Update
 
 Parameters in URL:
 
 | Parameter | Type | Explanation 
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
+| `pk` | `int` | The id of the version
 
-Response example:
+Request example:
 
 ```json
 {
-	"content": "processed text content including descendents"
+	"name": "Cleaned text"
 }
 ```
 
-The response includes the cleaned and lemmatized text of the section itself and ALL its descendents in the TOC tree.
+Response example if successful:
 
-## <a name="further-dev" style="color: #000;"></a> How to Contribute
+```json
+{
+	"id": 3,
+	"name": "Diff name",
+	"created_by": "admin",
+	"timestamp": "2016-09-02 22:00:00"
+}
+```
 
-*\* to be continued \**
+Response if login credentials not accepted:
+
+```
+401 Unauthorized
+```
+
+Response if the user who sent the request is not the creator of this version:
+
+```
+403 Forbidden
+```
+
+#### <a name="version-delete" style="color: #000;"></a> Delete
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `pk` | `int` | The id of the version
+
+Response if successful:
+
+```
+200 OK
+```
+
+Response if login credentials not accepted:
+
+```
+401 Unauthorized
+```
+
+Response if the user who sent the request is not the creator of this version:
+
+```
+403 Forbidden
+```
+
+### <a name="api-content" style="color: #000;"></a> Content
+
+| Endpoint | URL | Method | Permission | Auth  
+| --- | --- | --- | --- | --- |
+| [Immediate Text](#content-immediate) | `/immediate/{section}/{version}/` | GET | None | None
+| [Aggregate Text](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
+| [Post](#content-post) | `/post/{section}/{version}/` | POST | Version creator | Basic
+
+#### <a name="content-immediate" style="color: #000;"></a> Immediate Text
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `section` | `int` | The id of the section
+| (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
+
+Response example if successful:
+
+```
+The response body contains the clear text of a certain version of the section. 
+```
+
+Response if no such version for this section available:
+
+```
+404 Not Found
+```
+
+#### <a name="content-aggregate" style="color: #000;"></a> Aggregate Text
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `section` | `int` | The id of the section
+| (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
+
+Response example if successful:
+
+```
+The response body contains the clear text of a certain version of the section, 
+and ALL ITS DESCENDANTS, in the original page order.
+```
+
+Response if no such version for this section or any of its descendants available:
+
+```
+404 Not Found
+```
+
+
+#### <a name="content-post" style="color: #000;"></a> Post
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `section` | `int` | The id of the section
+| `version` | `int` | The id of the version
+
+The body of the request contains the location of the text file with contents of a specific version of a section, i.e. `output.txt`
+
+Response if successful:
+
+```
+200 OK
+```
+
+Response if login credentials not accepted:
+
+```
+401 Unauthorized
+```
+
+Response if the user who sent the request is not the creator of this version:
+
+```
+403 Forbidden
+```
+
