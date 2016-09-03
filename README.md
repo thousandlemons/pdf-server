@@ -390,11 +390,11 @@ If a user that is not the creator of the specific version access the API, the re
 
 | Endpoint | URL | Method | Permission | Auth  
 | --- | --- | --- | --- | --- |
-| [Get Immediate Content](#content-immediate) | `/immediate/{section}/{version}/` | GET | None | None
-| [Get Aggregate Content](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
-| [Post Content](#content-post) | `/post/{section}/{version}/` | POST | Version creator | Basic
+| [Get Immediate](#content-immediate) | `/immediate/{section}/{version}/` | GET | None | None
+| [Get Aggregate](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
+| [Post](#content-post) | `/post/{section}/{version}/` | POST | Version creator | Basic
 
-#### <a name="content-immediate" style="color: #000;"></a> Get Immediate Content 
+#### <a name="content-immediate" style="color: #000;"></a> Get Immediate 
 
 Parameters in URL:
 
@@ -409,7 +409,7 @@ Response example:
 
 The response is the text of a specific version of a section.
 
-#### <a name="content-aggregate" style="color: #000;"></a> Get Aggregate Content 
+#### <a name="content-aggregate" style="color: #000;"></a> Get Aggregate
 
 Parameters in URL:
 
@@ -424,7 +424,7 @@ Response example:
 
 The response is the aggregated text of a specific version of a section.
 
-#### <a name="content-create" style="color: #000;"></a> Create Content
+#### <a name="content-post" style="color: #000;"></a> Post
 
 Parameters in URL:
 
@@ -445,4 +445,4 @@ If a user that is not the creator of the specific version access the API, the re
 
 ## <a name="further-dev" style="color: #000;"></a> How to Contribute
 
-*\* to be continued \**
+To be continued.
