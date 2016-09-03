@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from book.models import Book
-from crawler.service import extract
+from extractor.service import extract
 
 
 def process_book(modeladmin, request, queryset):
