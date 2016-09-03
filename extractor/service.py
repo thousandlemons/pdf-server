@@ -3,8 +3,8 @@ import logging
 import os
 
 from content.models import Content
-from extractor.page_text_extractor import extract_plain_text
-from extractor.toc_tree import *
+from extractor.page import extract_plain_text
+from extractor.toc import *
 from section.models import *
 from version.models import Version
 
