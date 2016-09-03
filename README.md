@@ -6,7 +6,7 @@
 * [Getting Started](#system-setup)
 * [Admin Site](#admin-site)
 * [RESTful API](#api) 
-* [How to Contribute](#further-dev)
+
 
 ## <a name="intro" style="color: #000;"> Introduction </a>
 
