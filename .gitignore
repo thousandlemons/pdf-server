@@ -91,6 +91,6 @@ ENV/
 .ropeproject
 
 .idea/
-db.sqlite3
+*.sqlite3
 source/
 migrations
