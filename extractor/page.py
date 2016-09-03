@@ -1,7 +1,5 @@
 from bs4 import BeautifulSoup
 
-from crawler.cleaner import Cleaner
-
 # <p> tag with the following CSS classes will be ignored
 EXCLUDED_P_CLASS = {'top_nav', 'nav'}
 
@@ -27,7 +25,4 @@ def extract_plain_text(html_path):
             # append the content of this tag in a new line
             result += (''.join(tag.findAll(text=True)) + '\n')
 
-    # clean up text
-    cleaner = Cleaner()
-    result = cleaner.clean(result)
     return result

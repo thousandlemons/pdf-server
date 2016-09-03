@@ -6,10 +6,7 @@ from rest_framework.views import APIView
 
 from section.models import *
 from section.serializers import *
-from section.services import get_content, get_content_aggregate
 
-
-# Create your views here.
 
 class SectionDetail(APIView):
     def get(self, request, pk, format=None):
@@ -39,24 +36,8 @@ class WordCloud(APIView):
     def get(self, request, pk, format=None):
         try:
             section = Section.objects.get(id=pk)
+            if section.word_cloud_base64 is None or section.word_cloud_base64 == '':
+                raise Http404
             return HttpResponse(base64.b64decode(section.word_cloud_base64), content_type='image/jpeg')
-        except Section.DoesNotExist:
-            raise Http404
-
-
-class SectionContent(APIView):
-    def get(self, request, pk, format=None):
-        try:
-            section = Section.objects.get(id=pk)
-            return Response({'content': get_content(section)})
-        except Section.DoesNotExist:
-            raise Http404
-
-
-class SectionContentAggregate(APIView):
-    def get(self, request, pk, format=None):
-        try:
-            section = Section.objects.get(id=pk)
-            return Response({'content': get_content_aggregate(section)})
         except Section.DoesNotExist:
             raise Http404
