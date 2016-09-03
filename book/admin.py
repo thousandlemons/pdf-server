@@ -13,6 +13,7 @@ def process_book(modeladmin, request, queryset):
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
     list_display = ('title', 'id', 'is_processed')
+    readonly_fields = ('is_processed', 'toc_json', 'root_section')
     search_fields = ('title',)
     ordering = ('title', )
     list_filter = ('is_processed', )
