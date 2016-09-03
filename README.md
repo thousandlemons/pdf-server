@@ -240,7 +240,6 @@ Response example:
 ```json
 {
 	"title": "Section 1.1",
-	"slugified": "section-1-1",
 	"id": 27,
 	"has_children": false
 }
@@ -272,8 +271,8 @@ The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud
 | --- | --- | --- | --- |
 | [List](#version-list) | `/list` | GET | None
 | [Detail](#version-detail) | `/list/{pk}/` | GET | None
-| [Create Version](#version-create) | `/create/{pk}/` | POST | Admin and version author 
-| [Update Version](#version-update) | `/update/{pk}/` | POST | Admin and version author
+| [Create Version](#version-create) | `/create/{name}` | POST | Admin and version author 
+| [Update Version](#version-update) | `/update/{pk}/{data}` | POST | Admin and version author
 | [Delete Version](#version-delete) | `/delete/{pk}/` | POST | Admin and version author
 
 #### <a name="version-list" style="color: #000;"></a> List
@@ -335,11 +334,11 @@ Parameters in URL:
 
 | Parameter | Type | Explanation 
 | --- | --- | --- |
-| `pk` | `int` | The id of the version
+| `name` | `string` | The name of the version
 
 Response example:
 ```
-Version "Cleaned text for human readers" created
+Cleaned text for human readers [1]
 ```
 
 #### <a name="version-update" style="color: #000;"></a> Update Version
@@ -349,10 +348,11 @@ Parameters in URL:
 | Parameter | Type | Explanation 
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
+| `data` | `json` | The updated for the version in JSON
 
 Response example:
 ```
-Version "Cleaned text for human readers" updated
+Cleaned text for human reading [1]
 ```
 
 #### <a name="version-delete" style="color: #000;"></a> Delete Version
@@ -365,15 +365,15 @@ Parameters in URL:
 
 Response example:
 ```
-Version "Cleaned text for human readers" deleted
+Deleted "Cleaned text for human reading" [1]
 ```
 
 ### <a name="api-content" style="color: #000;"></a> Content
 
 | Endpoint | URL | Method | Access permission 
 | --- | --- | --- | --- |
-| [Get Content](#content-get) | `/get/{section}/{version}` | GET | None | 
-| [Create Content](#content-create) | `/create/{section}/{version}/` | POST | Admin and version creator |
+| [Get Content](#content-get) | `/get/{section}/{version}/` | GET | None | 
+| [Create Content](#content-create) | `/create/{section}/{version}/{text}` | POST | Admin and version creator |
 
 #### <a name="content-get" style="color: #000;"></a> Get Content 
 
@@ -402,11 +402,12 @@ Parameters in URL:
 | --- | --- | --- |
 | `section` | `int` | The id of the section
 | `version` | `int` | The id of the version
+| `text` | `file` | The file containing content text
 
 Response example:
 
 ```
-Content created for section "section-1-1", version "Cleaned text for human reading"
+Content created for section "Section 1.1", version "Cleaned text for human readers"
 ```
 
 ## <a name="further-dev" style="color: #000;"></a> How to Contribute
