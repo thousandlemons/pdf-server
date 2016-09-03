@@ -10,7 +10,7 @@ class Section(models.Model):
     word_cloud_base64 = models.TextField(null=True)
 
     def __str__(self):
-        return "%s - %s".format(self.book.title, self.title)
+        return "{book_title} - {section_title}".format(book_title=self.book.title, section_title=self.title)
 
 
 class Adjacency(models.Model):

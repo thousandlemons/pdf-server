@@ -8,4 +8,4 @@ class Version(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "%s [%d]".format(self.name, self.id)
+        return "{name} [{id}]".format(name=self.name, id=self.id)
