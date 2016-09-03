@@ -10,20 +10,22 @@
 
 ## <a name="intro" style="color: #000;"> Introduction </a>
 
-### Context
+### Background
 
 PDF ebooks usually have table of content (TOC). Hence, the texts in a PDF ebook are naturally in a certain hierarchy. Such text and hierarchy information extracted from PDF ebooks can be used for research in machine learning (especially hierarchical text classification) and natural language processing.
+
+The goal of this project is to provide a tool to manage and maintain a huge database of texts extracted from PDF ebooks and allow users to access and upload data through RESTful API endpoints. This project enable easy sharing and hence facilitates collaboration among researchers in a team, or across different teams.
 
 ### Project Scope
 
 The purpose of this project is to provide a RESTful backend and an admin site to 
 
-* Organize and process PDF files
-* Extract table of content (TOC) tree and store it in a relational database
-* Extract cleaned and lemmatized plain text
-* Maintain the hierarchical structure of the extracted texts according to the (TOC)
+* Organize and manage PDF ebooks
+* Extract TOC hierarchy and section texts from PDF ebooks
+* Store all data extracted from PDF ebooks in relational databases
 * Generate WordCloud images for all chapters, sections, and sub-sections
-* Access the TOC, plain text content (by chapter or section), WordCloud images and more through RESTful APIs
+* Access the TOC, text and more through and handlful RESTful APIs
+* Post your own version of processed texts of a book/chapter and share with other researchers
 
 ### Skills & Tools Required
 
@@ -33,7 +35,7 @@ The purpose of this project is to provide a RESTful backend and an admin site to
 
 ### Text Cleaning Techniques
 
-The built-in cleaner performs the following operations sequentially on the extracted texts:
+The built-in cleaner can perform the following operations sequentially on the extracted texts:
 
 1. Perform known replacements (e.g. "ﬁ" --> "fi"; if you don't see any difference, try to copy the first "ﬁ" as TWO letters, "f" and "i". You will realize you can't, because "ﬁ" is actually ONE unicode character)
 1. Replace non-ascii characters with underscore ("_")
@@ -46,7 +48,7 @@ The built-in cleaner performs the following operations sequentially on the extra
 1. Remove redundant whitespace characters
 1. Lemmatize
 
-You may customize the text cleaning procedure by adding/removing individual steps in the `Cleaner` class in `crawler/cleaner.py`. See more in [How to Contribute](#future-dev).
+However, the cleaner is **NOT enabled by default**. You may manually enable the cleaner or customize the cleaning procedure by modifying the source code in the `extractor` package.
 
 
 ## <a name="system-setup" style="color: #000;"></a> Getting Started
@@ -97,9 +99,11 @@ After creating a `Book` entry,
 1. Select "Process book" in the "Action" dropdown menu
 1. Click "GO"
 
-This will take from a few seconds to 10+ minutes for most cases, depending on the structure and the length of the book. Most importantly, <mark>DO NOT close the browser tab or shut down the server while a book is being processed</mark>. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
+This will take from a few seconds to a few minutes for most cases, depending on the structure and the length of the book. It will take a lot longer to process a book if you enable the text cleaner. 
 
-You can view the progress of the process in the terminal where you started the Django server.
+Most importantly, <mark>DO NOT close the browser tab or shut down the server while a book is being processed</mark>. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
+
+You can view the progress in the terminal where you started the Django server.
 
 ## <a name="api" style="color: #000;"></a> RESTful API
 
@@ -428,7 +432,7 @@ Response if the user who sent the request is not the creator of this version:
 | [Aggregate Text](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
 | [Post](#content-post) | `/post/{section}/{version}/` | POST | Version creator | Basic
 
-#### <a name="content-immediate" style="color: #000;"></a> Get Immediate
+#### <a name="content-immediate" style="color: #000;"></a> Immediate Text
 
 Parameters in URL:
 
@@ -437,13 +441,19 @@ Parameters in URL:
 | `section` | `int` | The id of the section
 | (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
-Response example:
+Response example if successful:
 
 ```
 The response body contains the clear text of a certain version of the section. 
 ```
 
-#### <a name="content-aggregate" style="color: #000;"></a> Get Aggregate
+Response if no such version for this section available:
+
+```
+404 Not Found
+```
+
+#### <a name="content-aggregate" style="color: #000;"></a> Aggregate Text
 
 Parameters in URL:
 
@@ -452,12 +462,19 @@ Parameters in URL:
 | `section` | `int` | The id of the section
 | (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
-Response example:
+Response example if successful:
 
 ```
 The response body contains the clear text of a certain version of the section, 
 and ALL ITS DESCENDANTS, in the original page order.
 ```
+
+Response if no such version for this section or any of its descendants available:
+
+```
+404 Not Found
+```
+
 
 #### <a name="content-post" style="color: #000;"></a> Post
 
@@ -488,6 +505,3 @@ Response if the user who sent the request is not the creator of this version:
 403 Forbidden
 ```
 
-## <a name="further-dev" style="color: #000;"></a> How to Contribute
-
-To be continued.
