@@ -430,14 +430,12 @@ Response if the user who sent the request is not the creator of this version:
 
 #### <a name="content-immediate" style="color: #000;"></a> Get Immediate
 
-<mark>TODO: What's the difference between immediate and aggregate?</mark>
-
 Parameters in URL:
 
 | Parameter | Type | Explanation 
 | --- | --- | --- |
 | `section` | `int` | The id of the section
-| `version` | `int` | The id of the version
+| (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
 Response example:
 
@@ -452,7 +450,7 @@ Parameters in URL:
 | Parameter | Type | Explanation 
 | --- | --- | --- |
 | `section` | `int` | The id of the section
-| `version` | `int` | The id of the version
+| (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
 Response example:
 
