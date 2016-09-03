@@ -120,9 +120,9 @@ The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `htt
 
 | Endpoint | URL | Method | 
 | --- | --- | --- | 
-| [List](#book-list) | `/list/` | GET 
-| [Detail](#book-detail) | `/detail/{pk}/` | GET 
-| [TOC](#book-toc) | `/toc/{pk}/` | GET 
+| [List](#book-list) | `/list/` | GET |
+| [Detail](#book-detail) | `/detail/{pk}/` | GET |
+| [TOC](#book-toc) | `/toc/{pk}/` | GET |
 
 #### <a name="book-list" style="color: #000;"></a> List
 
@@ -130,16 +130,16 @@ Response example:
 
 ```json
 [
-  {
-    "id": 2,
-    "title": "My Sample Handbook",
-    "root_section": 25
-  },
-  {
-    "id": 3,
-    "title": "My Sample Textbook",
-    "root_section": 72
-  }
+	{
+		"id": 2,
+		"title": "My Sample Handbook",
+		"root_section": 25
+	},
+	{
+		"id": 3,
+		"title": "My Sample Textbook",
+		"root_section": 72
+	}
 ]
 ```
 
@@ -147,39 +147,37 @@ More details on the fields:
 
 | Field | Type | Explanation | 
 | --- | --- | --- | 
-| `id` | `int` | The id of the book
-| `title` | `string` | The title of the book
-| `root_section` | `int` | The id of the root section that represents the entire book
+| `id` | `int` | The id of the book |
+| `title` | `string` | The title of the book |
+| `root_section` | `int` | The id of the root section that represents the entire book |
 
 #### <a name="book-detail" style="color: #000;"></a> Detail
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the book
-
+| `pk` | `int` | The id of the book |
 
 Response example:
 
 ```json
 {
-  "id": 7,
-  "title": "Digital Signal Processing System Analysis and Design",
-  "root_section": 1011
+	"id": 7,
+	"title": "Digital Signal Processing System Analysis and Design",
+	"root_section": 1011
 }
 ```
 
-This is a single element of the list returned by the `/book/list/` API.
+This is a single element of the list returned by the [List](#book-list) API above.
 
 #### <a name="book-toc" style="color: #000;"></a> TOC
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the book
-
+| `pk` | `int` | The id of the book |
 
 Response example:
 
@@ -217,9 +215,9 @@ This is a nested, recursive JSON that represents the table of content tree. Each
 
 | Field | Type | Explanation | 
 | --- | --- | --- | 
-| `title` | `string` | The title of the section
-| `id` | `int` | The id of the section
-| `children` | `array` | An array of immediate children nodes of the current node  
+| `title` | `string` | The title of the section |
+| `id` | `int` | The id of the section |
+| `children` | `array` | An array of immediate children nodes of the current node | 
 
 ### <a name="api-section" style="color: #000;"></a> Section
 
@@ -233,10 +231,9 @@ This is a nested, recursive JSON that represents the table of content tree. Each
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
-
+| `pk` | `int` | The id of the section |
 
 Response example:
 
@@ -253,10 +250,9 @@ Response example:
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation |
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
-
+| `pk` | `int` | The id of the section |
 
 The response is an array of "Detail"s in the `/detail/{pk}/` API.
 
@@ -264,9 +260,9 @@ The response is an array of "Detail"s in the `/detail/{pk}/` API.
 
 Parameters in URL:
 
-| Parameter | Type | Explanation 
+| Parameter | Type | Explanation | 
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
+| `pk` | `int` | The id of the section |
 
 The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud image generated based on the aggregated text of the section itself and all its descendents in the TOC tree.
 
@@ -288,20 +284,29 @@ Response example:
 [
 	{
 		"id": 1,
-		"version_name": "Cleaned text for human readers"
-		"created_by": "admin"
+		"name": "Cleaned text for human readers",
+		"created_by": "admin",
 		"timestamp": "2016-09-02 20:00:00"
 	}
 	{
 		"id": 2,
-		"version_name": "Cleaned text for machine"
-		"created_by": "admin"
+		"name": "Cleaned text for machine",
+		"created_by": "admin",
 		"timestamp": "2016-09-02 21:00:00"
 	}
 ]
 ```
 
 The response is an array of "Version"s.
+
+More details on the fields:
+
+| Field | Type | Explanation | 
+| --- | --- | --- | 
+| `id` | `int` | The id of the version
+| `name` | `string` | The name of the version
+| `created_by` | `string` | The user id for the author of the version
+| `timestamp` | `string` | The timestamp for version creation
 
 #### <a name="version-detail" style="color: #000;"></a> Detail
 
@@ -316,21 +321,59 @@ Response example:
 ```json
 {
 	"id": 1,
-	"version_name": "Cleaned text for human readers"
-	"created_by": "admin"
+	"version_name": "Cleaned text for human readers",
+	"created_by": "admin",
 	"timestamp": "2016-09-02 20:00:00"
 }
 ```
 
-The response is a single element of the array returned by the List API above.
+The response is a single element of the array returned by the [List](#version-list) API above.
+
+#### <a name="version-create" style="color: #000;"></a> Create Version
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `pk` | `int` | The id of the version
+
+Response example:
+```
+Version "Cleaned text for human readers" created
+```
+
+#### <a name="version-update" style="color: #000;"></a> Update Version
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `pk` | `int` | The id of the version
+
+Response example:
+```
+Version "Cleaned text for human readers" updated
+```
+
+#### <a name="version-delete" style="color: #000;"></a> Delete Version
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `pk` | `int` | The id of the version
+
+Response example:
+```
+Version "Cleaned text for human readers" deleted
+```
 
 ### <a name="api-content" style="color: #000;"></a> Content
 
 | Endpoint | URL | Method | Access permission 
 | --- | --- | --- | --- |
-| [Get Content](#content-get) | `/get/{pk}/` | GET | None | 
-| [Get Aggregate Content](#content-aggregate) | `/get/{pk}/aggregate/` | GET | None |
-| [Create Content](#content-post) | `/create/{pk}/` | POST | Admin and version creator |
+| [Get Content](#content-get) | `/get/{section}/{version}` | GET | None | 
+| [Create Content](#content-create) | `/create/{section}/{version}/` | POST | Admin and version creator |
 
 #### <a name="content-get" style="color: #000;"></a> Get Content 
 
@@ -338,37 +381,33 @@ Parameters in URL:
 
 | Parameter | Type | Explanation 
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
+| `section` | `int` | The id of the section
+| `version` | `int` | The id of the version
 
 Response example:
 
 ```json
 {
-	"content": "processed text content"
+	"text": "processed text content"
 }
 ```
 
-The response includes ONLY the immediate text of the section itself.
+The response includes the text of a specific version of a section.
 
-Also please note that the texts are AFTER the entire text cleaning & lemmatization procedure.
-
-#### <a name="content-aggregate" style="color: #000;"></a> Get Aggregate Content
+#### <a name="content-create" style="color: #000;"></a> Create Content
 
 Parameters in URL:
 
 | Parameter | Type | Explanation 
 | --- | --- | --- |
-| `pk` | `int` | The id of the section
+| `section` | `int` | The id of the section
+| `version` | `int` | The id of the version
 
 Response example:
 
-```json
-{
-	"content": "processed text content including descendents"
-}
 ```
-
-The response includes the cleaned and lemmatized text of the section itself and ALL its descendents in the TOC tree.
+Content created for section "section-1-1", version "Cleaned text for human reading"
+```
 
 ## <a name="further-dev" style="color: #000;"></a> How to Contribute
 
