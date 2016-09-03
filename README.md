@@ -267,13 +267,13 @@ The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud
 
 ### <a name="api-version" style="color: #000;"></a> Version
 
-| Endpoint | URL | Method | Access permission 
-| --- | --- | --- | --- |
-| [List](#version-list) | `/list` | GET | None
-| [Detail](#version-detail) | `/list/{pk}/` | GET | None
-| [Create Version](#version-create) | `/create/{name}` | POST | Admin and version author 
-| [Update Version](#version-update) | `/update/{pk}/{data}` | POST | Admin and version author
-| [Delete Version](#version-delete) | `/delete/{pk}/` | POST | Admin and version author
+| Endpoint | URL | Method | Permission | Auth
+| --- | --- | --- | --- | --- |
+| [List](#version-list) | `/list` | GET | None | None
+| [Detail](#version-detail) | `/detail/{pk}/` | GET | None | None
+| [Create](#version-create) | `/create/` | POST | Any user | Basic
+| [Update](#version-update) | `/update/{pk}/` | POST | Version creator | Basic
+| [Delete](#version-delete) | `/delete/{pk}/` | POST | Version creator | Basic
 
 #### <a name="version-list" style="color: #000;"></a> List
 
@@ -304,7 +304,7 @@ More details on the fields:
 | --- | --- | --- | 
 | `id` | `int` | The id of the version
 | `name` | `string` | The name of the version
-| `created_by` | `string` | The user id for the author of the version
+| `created_by` | `string` | The user id for the creator of the version
 | `timestamp` | `string` | The timestamp for version creation
 
 #### <a name="version-detail" style="color: #000;"></a> Detail
@@ -328,34 +328,24 @@ Response example:
 
 The response is a single element of the array returned by the [List](#version-list) API above.
 
-#### <a name="version-create" style="color: #000;"></a> Create Version
+#### <a name="version-create" style="color: #000;"></a> Create
 
-Parameters in URL:
-
-| Parameter | Type | Explanation 
-| --- | --- | --- |
-| `name` | `string` | The name of the version
+The body of the request contains the name of a new version in JSON format, i.e. `name="Cleaned text for coref"`
 
 Response example:
-```
-Cleaned text for human readers [1]
-```
 
-#### <a name="version-update" style="color: #000;"></a> Update Version
-
-Parameters in URL:
-
-| Parameter | Type | Explanation 
-| --- | --- | --- |
-| `pk` | `int` | The id of the version
-| `data` | `json` | The updated for the version in JSON
-
-Response example:
-```
-Cleaned text for human reading [1]
+```json
+{
+	"id": 3,
+	"version_name": "Cleaned text for coref",
+	"created_by": "admin",
+	"timestamp": "2016-09-02 22:00:00"
+}
 ```
 
-#### <a name="version-delete" style="color: #000;"></a> Delete Version
+If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+
+#### <a name="version-update" style="color: #000;"></a> Update
 
 Parameters in URL:
 
@@ -363,19 +353,48 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
+The body of the request contains the updated attributes of a version in JSON format, i.e. `name="Diff name"`
+
 Response example:
+
+```json
+{
+	"id": 3,
+	"version_name": "Diff name",
+	"created_by": "admin",
+	"timestamp": "2016-09-02 22:00:00"
+}
 ```
-Deleted "Cleaned text for human reading" [1]
-```
+
+If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+
+If a user that is not the creator of the specific version access the API, the response should be `HTTP_403_FORBIDDEN`.
+
+#### <a name="version-delete" style="color: #000;"></a> Delete
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `pk` | `int` | The id of the version
+
+Response example:
+
+`HTTP_200_OK`
+
+If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+
+If a user that is not the creator of the specific version access the API, the response should be `HTTP_403_FORBIDDEN`.
 
 ### <a name="api-content" style="color: #000;"></a> Content
 
-| Endpoint | URL | Method | Access permission 
-| --- | --- | --- | --- |
-| [Get Content](#content-get) | `/get/{section}/{version}/` | GET | None | 
-| [Create Content](#content-create) | `/create/{section}/{version}/{text}` | POST | Admin and version creator |
+| Endpoint | URL | Method | Permission | Auth  
+| --- | --- | --- | --- | --- |
+| [Get Immediate Content](#content-immediate) | `/immediate/{section}/{version}/` | GET | None | None
+| [Get Aggregate Content](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
+| [Post Content](#content-post) | `/post/{section}/{version}/` | POST | Version creator | Basic
 
-#### <a name="content-get" style="color: #000;"></a> Get Content 
+#### <a name="content-immediate" style="color: #000;"></a> Get Immediate Content 
 
 Parameters in URL:
 
@@ -386,13 +405,24 @@ Parameters in URL:
 
 Response example:
 
-```json
-{
-	"text": "processed text content"
-}
-```
+`"processed text content"`
 
-The response includes the text of a specific version of a section.
+The response is the text of a specific version of a section.
+
+#### <a name="content-aggregate" style="color: #000;"></a> Get Aggregate Content 
+
+Parameters in URL:
+
+| Parameter | Type | Explanation 
+| --- | --- | --- |
+| `section` | `int` | The id of the section
+| `version` | `int` | The id of the version
+
+Response example:
+
+`"processed text content"`
+
+The response is the aggregated text of a specific version of a section.
 
 #### <a name="content-create" style="color: #000;"></a> Create Content
 
@@ -402,13 +432,16 @@ Parameters in URL:
 | --- | --- | --- |
 | `section` | `int` | The id of the section
 | `version` | `int` | The id of the version
-| `text` | `file` | The file containing content text
+
+The body of the request contains the location of the text file with contents of a specific version of a section, i.e. `output.txt`
 
 Response example:
 
-```
-Content created for section "Section 1.1", version "Cleaned text for human readers"
-```
+`HTTP_200_OK`
+
+If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+
+If a user that is not the creator of the specific version access the API, the response should be `HTTP_403_FORBIDDEN`.
 
 ## <a name="further-dev" style="color: #000;"></a> How to Contribute
 
