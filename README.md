@@ -330,9 +330,15 @@ The response is a single element of the array returned by the [List](#version-li
 
 #### <a name="version-create" style="color: #000;"></a> Create
 
-The body of the request contains the name of a new version in JSON format, i.e. `name="Cleaned text for coref"`
+Request example:
 
-Response example:
+```json
+{
+	"name": "Cleaned text"
+}
+```
+
+Response example if successful:
 
 ```json
 {
@@ -343,7 +349,11 @@ Response example:
 }
 ```
 
-If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+Response if login credentials not accepted:
+
+```
+401 Unauthorized
+```
 
 #### <a name="version-update" style="color: #000;"></a> Update
 
@@ -353,9 +363,15 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
-The body of the request contains the updated attributes of a version in JSON format, i.e. `name="Diff name"`
+Request example:
 
-Response example:
+```json
+{
+	"name": "Cleaned text"
+}
+```
+
+Response example if successful:
 
 ```json
 {
@@ -366,9 +382,17 @@ Response example:
 }
 ```
 
-If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+Response if login credentials not accepted:
 
-If a user that is not the creator of the specific version access the API, the response should be `HTTP_403_FORBIDDEN`.
+```
+401 Unauthorized
+```
+
+Response if the user who sent the request is not the creator of this version:
+
+```
+403 Forbidden
+```
 
 #### <a name="version-delete" style="color: #000;"></a> Delete
 
@@ -378,23 +402,35 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
-Response example:
+Response if successful:
 
-`HTTP_200_OK`
+```
+200 OK
+```
 
-If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+Response if login credentials not accepted:
 
-If a user that is not the creator of the specific version access the API, the response should be `HTTP_403_FORBIDDEN`.
+```
+401 Unauthorized
+```
+
+Response if the user who sent the request is not the creator of this version:
+
+```
+403 Forbidden
+```
 
 ### <a name="api-content" style="color: #000;"></a> Content
 
 | Endpoint | URL | Method | Permission | Auth  
 | --- | --- | --- | --- | --- |
-| [Get Immediate](#content-immediate) | `/immediate/{section}/{version}/` | GET | None | None
-| [Get Aggregate](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
+| [Immediate Text](#content-immediate) | `/immediate/{section}/{version}/` | GET | None | None
+| [Aggregate Text](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
 | [Post](#content-post) | `/post/{section}/{version}/` | POST | Version creator | Basic
 
-#### <a name="content-immediate" style="color: #000;"></a> Get Immediate 
+#### <a name="content-immediate" style="color: #000;"></a> Get Immediate
+
+<mark>TODO: What's the difference between immediate and aggregate?</mark>
 
 Parameters in URL:
 
@@ -405,9 +441,9 @@ Parameters in URL:
 
 Response example:
 
-`"processed text content"`
-
-The response is the text of a specific version of a section.
+```
+The response body contains the clear text of a certain version of the section. 
+```
 
 #### <a name="content-aggregate" style="color: #000;"></a> Get Aggregate
 
@@ -420,9 +456,10 @@ Parameters in URL:
 
 Response example:
 
-`"processed text content"`
-
-The response is the aggregated text of a specific version of a section.
+```
+The response body contains the clear text of a certain version of the section, 
+and ALL ITS DESCENDANTS, in the original page order.
+```
 
 #### <a name="content-post" style="color: #000;"></a> Post
 
@@ -435,13 +472,23 @@ Parameters in URL:
 
 The body of the request contains the location of the text file with contents of a specific version of a section, i.e. `output.txt`
 
-Response example:
+Response if successful:
 
-`HTTP_200_OK`
+```
+200 OK
+```
 
-If a non-authenticated user access the API, the response should be `HTTP_401_UNAUTHORIZED`.
+Response if login credentials not accepted:
 
-If a user that is not the creator of the specific version access the API, the response should be `HTTP_403_FORBIDDEN`.
+```
+401 Unauthorized
+```
+
+Response if the user who sent the request is not the creator of this version:
+
+```
+403 Forbidden
+```
 
 ## <a name="further-dev" style="color: #000;"></a> How to Contribute
 
