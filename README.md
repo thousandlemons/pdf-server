@@ -24,8 +24,9 @@ The purpose of this project is to provide a RESTful backend and an admin site to
 * Extract TOC hierarchy and section texts from PDF ebooks
 * Store all data extracted from PDF ebooks in relational databases
 * Generate WordCloud images for all chapters, sections, and sub-sections
-* Access the TOC, text and more through and handlful RESTful APIs
+* Access the TOC, text and more through a handlful of RESTful APIs
 * Post your own version of processed texts of a book/chapter and share with other researchers
+* (*Optional) clean up and lemmatize the extracted texts using the built-in cleaner.
 
 ### Skills & Tools Required
 
