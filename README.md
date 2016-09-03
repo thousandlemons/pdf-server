@@ -320,7 +320,7 @@ Response example:
 ```json
 {
 	"id": 1,
-	"version_name": "Cleaned text for human readers",
+	"name": "Cleaned text for human readers",
 	"created_by": "admin",
 	"timestamp": "2016-09-02 20:00:00"
 }
@@ -343,7 +343,7 @@ Response example if successful:
 ```json
 {
 	"id": 3,
-	"version_name": "Cleaned text for coref",
+	"name": "Cleaned text for coref",
 	"created_by": "admin",
 	"timestamp": "2016-09-02 22:00:00"
 }
@@ -376,7 +376,7 @@ Response example if successful:
 ```json
 {
 	"id": 3,
-	"version_name": "Diff name",
+	"name": "Diff name",
 	"created_by": "admin",
 	"timestamp": "2016-09-02 22:00:00"
 }
