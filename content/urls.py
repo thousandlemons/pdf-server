@@ -5,7 +5,11 @@ from content import views
 urlpatterns = [
     # Version key is optional for Immediate Text and Aggregate Text,
     # but required for Post.
-    url(r'immediate/(?P<pk_section>[1-9]+)/(?P<pk_version>[1-9]+)?/$', views.ContentImmediate.as_view()),
-    url(r'aggregate/(?P<pk_section>[1-9]+)/(?P<pk_version>[1-9]+)?/$', views.ContentAggregate.as_view()),
-    url(r'post/(?P<pk_section>[1-9]+)/(?P<pk_version>[1-9]+)/$', views.ContentPost.as_view())
+    url(r'immediate/(?P<section_pk>[1-9]+)/$', views.ContentViewSet.as_view({'get': 'immediate'})),
+    url(r'immediate/(?P<section_pk>[1-9]+)/(?P<version_pk>[1-9]+)/$',
+        views.ContentViewSet.as_view({'get': 'immediate'})),
+    url(r'aggregate/(?P<section_pk>[1-9]+)/$', views.ContentViewSet.as_view({'get': 'aggregate'})),
+    url(r'aggregate/(?P<section_pk>[1-9]+)/(?P<version_pk>[1-9]+)/$',
+        views.ContentViewSet.as_view({'get': 'aggregate'})),
+    url(r'post/(?P<section_pk>[1-9]+)/(?P<version_pk>[1-9]+)/$', views.ContentViewSet.as_view({'post': 'post'}))
 ]
