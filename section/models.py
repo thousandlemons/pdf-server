@@ -7,7 +7,6 @@ class Section(models.Model):
     book = models.ForeignKey(Book)
     title = models.TextField()
     has_children = models.BooleanField()
-    word_cloud_base64 = models.TextField(null=True)
 
     def __str__(self):
         return "{book_title} - {section_title}".format(book_title=self.book.title, section_title=self.title)
