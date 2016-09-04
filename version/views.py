@@ -4,19 +4,14 @@ from rest_framework import viewsets
 from version.serializers import *
 
 
-class VersionPermission(permissions.BasePermission):
+class VersionPermission(permissions.IsAuthenticatedOrReadOnly):
     def has_object_permission(self, request, view, obj):
+        permitted_by_super = super().has_object_permission(request, view, obj)
 
-        # any user can view
-        if request.method in permissions.SAFE_METHODS:
-            return True
+        if request.method not in ('POST', 'DELETE'):
+            return permitted_by_super
 
-        # only creators can update and delete
-        if request.method in ('POST', 'DELETE'):
-            return obj.created_by == request.user
-
-        # authenticated users can create
-        return request.user is not None
+        return permitted_by_super and obj.created_by == request.user
 
 
 class VersionViewSet(viewsets.ModelViewSet):

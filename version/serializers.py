@@ -5,7 +5,8 @@ from version.models import *
 
 class VersionSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
+        instance.name = validated_data['name']
+        instance.save()
         return instance
 
     class Meta:
