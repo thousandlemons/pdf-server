@@ -36,11 +36,6 @@ def _recursive_extract(node, source, parent_section, book):
         child_text = _recursive_extract(child, source, section, book)
         text_in_children += child_text
 
-    # create default version if no entry exists in Version table
-    if not Version.objects.all():
-        version = Version.objects.create(name='Raw')
-        version.save()
-
     # create Content entry
     version = Version.objects.order_by('id')[0]
     plain_text = extract_plain_text(os.path.join(source, node['link'])) if parent_section is not None else ''
@@ -90,6 +85,11 @@ def extract(book):
 
     # get the toc tree
     toc_tree = construct_toc_tree(title, os.path.join(source, title + '.html'))
+
+    # create default version if no entry exists in Version table
+    if not Version.objects.all():
+        version = Version.objects.create(name='Raw')
+        version.save()
 
     # recursively extract content
     _recursive_extract(toc_tree, source, None, book)

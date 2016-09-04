@@ -2,8 +2,9 @@ from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from section.models import *
-from section.serializers import *
+from section.models import Section, Adjacency
+from section.serializers import SectionSerializer
+from section.services import get_children
 
 
 class SectionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -13,9 +14,6 @@ class SectionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def children(self, request, pk):
         section = self.get_object()
-        adjacencies = Adjacency.objects.filter(parent=section)
-        children = list()
-        for adjacency in adjacencies:
-            children.append(adjacency.child)
+        children = get_children(section)
         serializer = self.get_serializer(children, many=True)
         return Response(serializer.data)

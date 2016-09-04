@@ -1,11 +1,12 @@
 from section.models import *
 
 
-# given a Section object, get the Book object that it belongs to
-def get_book(section):
-    while True:
-        try:
-            adjacency = Adjacency.objects.get(child=section)
-            section = adjacency.parent
-        except Adjacency.DoesNotExist:
-            return Book.objects.get(root_section=section)
+def get_children(section):
+    return [adjacency.child for adjacency in Adjacency.objects.filter(parent=section)]
+
+
+def get_parent(section):
+    try:
+        return Adjacency.objects.get(child=section)
+    except Adjacency.DoesNotExist:
+        return None
