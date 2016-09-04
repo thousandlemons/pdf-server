@@ -2,22 +2,25 @@
 import json
 
 from django.http import Http404
+from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import viewsets
 
 from content.models import Content
 from content.serializers import ContentSerializer
 
-class ContentImmediate(APIView):
-    def get(self, request, pk_section, pk_version= , format=None): # Default version key to be filled in.
-    
 
-class ContentAggregate(APIView):
-    def get(self, request, pk_section, pk_version= , format=None): # Default version key to be filled in.
-    
+class ContentPermission(permissions.IsAuthenticatedOrReadOnly):
+    def has_object_permission(self, request, view, obj):
+        permitted_by_super = super().has_object_permission(request, view, obj)
 
-class ContentPost(APIView):
-    def post(self, request, pk_section, pk_version, format=None):
-    
-    
-        
+        if request.method not in ('POST', ):
+            return permitted_by_super
+
+        return permitted_by_super and obj.version.created_by == request.user
+
+
+class ContentViewSet(viewsets.GenericViewSet):
+    queryset = Content.objects.all()
+    permission_classes = (ContentPermission, )
