@@ -1,30 +1,28 @@
-from django.shortcuts import render
+from rest_framework import permissions
+from rest_framework import viewsets
 
-# Create your views here.
-import json
+from version.serializers import *
 
-from django.http import Http404
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from version.models import Version
-from version.serializers import VersionSerializer
+class VersionPermission(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
 
-class VersionList(APIView):
-    def get(self, request, format=None):
-    
+        # any user can view
+        if request.method in permissions.SAFE_METHODS:
+            return True
 
-class VersionDetail(APIView):
-    def get(self, request, pk, format=None):
-    
+        # only creators can update and delete
+        if request.method in ('POST', 'DELETE'):
+            return obj.created_by == request.user
 
-class VersionCreate(APIView):
-    def post(self, request, format=None):
-    
+        # authenticated users can create
+        return request.user is not None
 
-class VersionUpdate(APIView):
-    def post(self, request, pk, format=None):
-    
 
-class VersionDelete(APIView):
-    def post(self, request, pk, format=None):
+class VersionViewSet(viewsets.ModelViewSet):
+    queryset = Version.objects.all()
+    serializer_class = VersionSerializer
+    permission_classes = (VersionPermission,)
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
