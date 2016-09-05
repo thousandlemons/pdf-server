@@ -66,6 +66,7 @@ The following additional steps are **for Ubuntu users ONLY**:
 1. Install package `libfreetype6-dev` </br> `$ sudo apt-get install libfreetype6-dev`
 1. Reinstall `pillow` </br> `$ pip uninstall pillow`</br> `$ pip install pillow`
 
+
 ## <a name="admin-site" style="color: #000;"></a> Admin Site
 
 This is a standard admin site of Django. It can be accessed by the URL `<your-domain>/admin/`. If you are running the default Django development server, the complete URL is [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/).
@@ -104,6 +105,7 @@ This will take from a few seconds to a few minutes for most cases, depending on 
 Most importantly, <mark>DO NOT close the browser tab or shut down the server while a book is being processed</mark>. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
 
 You can view the progress in the terminal where you started the Django server.
+
 
 ## <a name="api" style="color: #000;"></a> RESTful API
 
@@ -273,8 +275,8 @@ Response example:
 [
 	{
 		"id": 1,
-		"name": "Cleaned text for human readers",
-		"created_by": "admin",
+		"name": "Raw",
+		"created_by": null,
 		"timestamp": "2016-09-02 20:00:00"
 	}
 	{
@@ -306,8 +308,8 @@ Response example:
 [
 	{
 		"id": 1,
-		"name": "Cleaned text for human readers",
-		"created_by": "admin",
+		"name": "Raw",
+		"created_by": null,
 		"timestamp": "2016-09-02 20:00:00"
 	}
 	{
@@ -319,7 +321,7 @@ Response example:
 ]
 ```
 
-The response is an array of "Version"s.
+The response is an array of "Version"s. The default version, "Raw" is included.
 
 More details on the fields:
 
@@ -338,13 +340,20 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
-Response example:
+HTTP response examples:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| No such version available | `404 Not Found` | 
+
+Response data if successful:
 
 ```json
 {
 	"id": 1,
-	"name": "Cleaned text for human readers",
-	"created_by": "admin",
+	"name": "Raw",
+	"created_by": null,
 	"timestamp": "2016-09-02 20:00:00"
 }
 ```
@@ -361,7 +370,14 @@ Request example:
 }
 ```
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `201 Created` |
+| Login credentials not accepted | `401 Unauthorized` | 
+
+Example of response data if successful:
 
 ```json
 {
@@ -370,12 +386,6 @@ Response example if successful:
 	"created_by": "admin",
 	"timestamp": "2016-09-02 22:00:00"
 }
-```
-
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
 ```
 
 #### <a name="version-update" style="color: #000;"></a> Update
@@ -394,7 +404,16 @@ Request example:
 }
 ```
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` | 
+| User is not the version creator | `403 Forbidden` |
+| No such version available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```json
 {
@@ -405,18 +424,6 @@ Response example if successful:
 }
 ```
 
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
-```
-
-Response if the user who sent the request is not the creator of this version:
-
-```
-403 Forbidden
-```
-
 #### <a name="version-delete" style="color: #000;"></a> Delete
 
 Parameters in URL:
@@ -425,25 +432,16 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
-Response if successful:
+HTTP responses:
 
-```
-200 OK
-```
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `204 No Content` |
+| Login credentials not accepted | `401 Unauthorized` | 
+| User is not the version creator | `403 Forbidden` |
+| No such version available | `404 Not Found` |
 
 When a version is deleted, all contents associated with that version will be deleted as well. For more details on contents, see the [Content](#api-content) API below.
-
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
-```
-
-Response if the user who sent the request is not the creator of this version:
-
-```
-403 Forbidden
-```
 
 ### <a name="api-content" style="color: #000;"></a> Content
 
@@ -462,16 +460,17 @@ Parameters in URL:
 | `section` | `int` | The id of the section
 | (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| No such section/ version available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```
 The response body contains the clear text of a certain version of the section. 
-```
-
-Response if no such version for this section available:
-
-```
-404 Not Found
 ```
 
 #### <a name="content-aggregate" style="color: #000;"></a> Aggregate Text
@@ -483,19 +482,19 @@ Parameters in URL:
 | `section` | `int` | The id of the section
 | (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| No such section/ version available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```
 The response body contains the clear text of a certain version of the section, 
 and ALL ITS DESCENDANTS, in the original page order.
 ```
-
-Response if no such version for this section or any of its descendants available:
-
-```
-404 Not Found
-```
-
 
 #### <a name="content-post" style="color: #000;"></a> Post
 
@@ -508,21 +507,12 @@ Parameters in URL:
 
 The body of the request contains the location of the text file with contents of a specific version of a section, i.e. `output.txt`
 
-Response if successful:
+HTTP responses:
 
-```
-200 OK
-```
-
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
-```
-
-Response if the user who sent the request is not the creator of this version:
-
-```
-403 Forbidden
-```
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` | 
+| User is not the version creator | `403 Forbidden` |
+| No such section/ version available | `404 Not Found` |
 
