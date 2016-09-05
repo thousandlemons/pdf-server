@@ -23,7 +23,6 @@ The purpose of this project is to provide a RESTful backend and an admin site to
 * Organize and manage PDF ebooks
 * Extract TOC hierarchy and section texts from PDF ebooks
 * Store all data extracted from PDF ebooks in relational databases
-* Generate WordCloud images for all chapters, sections, and sub-sections
 * Access the TOC, text and more through a handlful of RESTful APIs
 * Post your own version of processed texts of a book/chapter and share with other researchers
 * (*Optional) clean up and lemmatize the extracted texts using the built-in cleaner.
@@ -431,6 +430,8 @@ Response if successful:
 ```
 200 OK
 ```
+
+When a version is deleted, all contents associated with that version will be deleted as well. For more details on contents, see the [Content](#api-content) API below.
 
 Response if login credentials not accepted:
 
