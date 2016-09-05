@@ -9,4 +9,3 @@ urlpatterns = [
     url(r'update/(?P<pk>[1-9]\d*)/$', views.VersionViewSet.as_view({'post': 'update'})),
     url(r'delete/(?P<pk>[1-9]\d*)/$', views.VersionViewSet.as_view({'delete': 'destroy'}))
 ]
-g
