@@ -276,9 +276,9 @@ The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud
 | --- | --- | --- | --- | --- |
 | [List](#version-list) | `/list` | GET | None | None
 | [Detail](#version-detail) | `/detail/{pk}/` | GET | None | None
-| [Create](#version-create) | `/create/` | POST | Any user | Basic
+| [Create](#version-create) | `/create/` | PUT | Any user | Basic
 | [Update](#version-update) | `/update/{pk}/` | POST | Version creator | Basic
-| [Delete](#version-delete) | `/delete/{pk}/` | POST | Version creator | Basic
+| [Delete](#version-delete) | `/delete/{pk}/` | DELETE | Version creator | Basic
 
 #### <a name="version-list" style="color: #000;"></a> List
 
@@ -339,7 +339,7 @@ Request example:
 
 ```json
 {
-	"name": "Cleaned text"
+	"name": "Cleaned text for coref"
 }
 ```
 
@@ -372,7 +372,7 @@ Request example:
 
 ```json
 {
-	"name": "Cleaned text"
+	"name": "Diff name"
 }
 ```
 
