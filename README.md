@@ -230,7 +230,7 @@ This is a nested, recursive JSON that represents the table of content tree. Each
 | --- | --- | --- |
 | [Detail](#section-detail) | `/detail/{pk}/` | GET |
 | [Children](#section-children) | `/children/{pk}/` | GET |
-| [Word Cloud](#section-wordcloud) | `/wordcloud/{pk}/` | GET |
+| [Versions](#section-versions) | `/versions/{pk}/` | GET |
 
 #### <a name="section-detail" style="color: #000;"></a> Detail
 
@@ -260,7 +260,7 @@ Parameters in URL:
 
 The response is an array of "Detail"s in the `/detail/{pk}/` API.
 
-#### <a name="section-wordcloud" style="color: #000;"></a> Word Cloud 
+#### <a name="section-versions" style="color: #000;"></a> Versions
 
 Parameters in URL:
 
@@ -268,7 +268,26 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the section |
 
-The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud image generated based on the aggregated text of the section itself and all its descendents in the TOC tree.
+Response example:
+
+```json
+[
+	{
+		"id": 1,
+		"name": "Cleaned text for human readers",
+		"created_by": "admin",
+		"timestamp": "2016-09-02 20:00:00"
+	}
+	{
+		"id": 2,
+		"name": "Cleaned text for machine",
+		"created_by": "admin",
+		"timestamp": "2016-09-02 21:00:00"
+	}
+]
+```
+
+The response is an array of all the versions associated with the section. See the [Version](#api-version) API below for more details.
 
 ### <a name="api-version" style="color: #000;"></a> Version
 
