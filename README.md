@@ -23,7 +23,6 @@ The purpose of this project is to provide a RESTful backend and an admin site to
 * Organize and manage PDF ebooks
 * Extract TOC hierarchy and section texts from PDF ebooks
 * Store all data extracted from PDF ebooks in relational databases
-* Generate WordCloud images for all chapters, sections, and sub-sections
 * Access the TOC, text and more through a handlful of RESTful APIs
 * Post your own version of processed texts of a book/chapter and share with other researchers
 * (*Optional) clean up and lemmatize the extracted texts using the built-in cleaner.
@@ -67,6 +66,7 @@ The following additional steps are **for Ubuntu users ONLY**:
 1. Install package `libfreetype6-dev` </br> `$ sudo apt-get install libfreetype6-dev`
 1. Reinstall `pillow` </br> `$ pip uninstall pillow`</br> `$ pip install pillow`
 
+
 ## <a name="admin-site" style="color: #000;"></a> Admin Site
 
 This is a standard admin site of Django. It can be accessed by the URL `<your-domain>/admin/`. If you are running the default Django development server, the complete URL is [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/).
@@ -105,6 +105,7 @@ This will take from a few seconds to a few minutes for most cases, depending on 
 Most importantly, <mark>DO NOT close the browser tab or shut down the server while a book is being processed</mark>. Data integrity could NOT be preserved (in other words, the system WILL fail) if the process is interrupted in the middle.
 
 You can view the progress in the terminal where you started the Django server.
+
 
 ## <a name="api" style="color: #000;"></a> RESTful API
 
@@ -230,7 +231,7 @@ This is a nested, recursive JSON that represents the table of content tree. Each
 | --- | --- | --- |
 | [Detail](#section-detail) | `/detail/{pk}/` | GET |
 | [Children](#section-children) | `/children/{pk}/` | GET |
-| [Word Cloud](#section-wordcloud) | `/wordcloud/{pk}/` | GET |
+| [Versions](#section-versions) | `/versions/{pk}/` | GET |
 
 #### <a name="section-detail" style="color: #000;"></a> Detail
 
@@ -260,7 +261,7 @@ Parameters in URL:
 
 The response is an array of "Detail"s in the `/detail/{pk}/` API.
 
-#### <a name="section-wordcloud" style="color: #000;"></a> Word Cloud 
+#### <a name="section-versions" style="color: #000;"></a> Versions
 
 Parameters in URL:
 
@@ -268,28 +269,14 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the section |
 
-The response has the HTTP header `Content-Type: image/jpeg` that is a word cloud image generated based on the aggregated text of the section itself and all its descendents in the TOC tree.
-
-### <a name="api-version" style="color: #000;"></a> Version
-
-| Endpoint | URL | Method | Permission | Auth
-| --- | --- | --- | --- | --- |
-| [List](#version-list) | `/list` | GET | None | None
-| [Detail](#version-detail) | `/detail/{pk}/` | GET | None | None
-| [Create](#version-create) | `/create/` | POST | Any user | Basic
-| [Update](#version-update) | `/update/{pk}/` | POST | Version creator | Basic
-| [Delete](#version-delete) | `/delete/{pk}/` | POST | Version creator | Basic
-
-#### <a name="version-list" style="color: #000;"></a> List
-
 Response example:
 
 ```json
 [
 	{
 		"id": 1,
-		"name": "Cleaned text for human readers",
-		"created_by": "admin",
+		"name": "Raw",
+		"created_by": null,
 		"timestamp": "2016-09-02 20:00:00"
 	}
 	{
@@ -301,7 +288,40 @@ Response example:
 ]
 ```
 
-The response is an array of "Version"s.
+The response is an array of all the versions associated with the section. See the [Version](#api-version) API below for more details.
+
+### <a name="api-version" style="color: #000;"></a> Version
+
+| Endpoint | URL | Method | Permission | Auth
+| --- | --- | --- | --- | --- |
+| [List](#version-list) | `/list` | GET | None | None
+| [Detail](#version-detail) | `/detail/{pk}/` | GET | None | None
+| [Create](#version-create) | `/create/` | PUT | Any user | Basic
+| [Update](#version-update) | `/update/{pk}/` | POST | Version creator | Basic
+| [Delete](#version-delete) | `/delete/{pk}/` | DELETE | Version creator | Basic
+
+#### <a name="version-list" style="color: #000;"></a> List
+
+Response example:
+
+```json
+[
+	{
+		"id": 1,
+		"name": "Raw",
+		"created_by": null,
+		"timestamp": "2016-09-02 20:00:00"
+	}
+	{
+		"id": 2,
+		"name": "Cleaned text for machine",
+		"created_by": "admin",
+		"timestamp": "2016-09-02 21:00:00"
+	}
+]
+```
+
+The response is an array of "Version"s. The default version, "Raw" is included.
 
 More details on the fields:
 
@@ -320,13 +340,20 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
-Response example:
+HTTP response examples:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| No such version available | `404 Not Found` | 
+
+Response data if successful:
 
 ```json
 {
 	"id": 1,
-	"name": "Cleaned text for human readers",
-	"created_by": "admin",
+	"name": "Raw",
+	"created_by": null,
 	"timestamp": "2016-09-02 20:00:00"
 }
 ```
@@ -339,11 +366,18 @@ Request example:
 
 ```json
 {
-	"name": "Cleaned text"
+	"name": "Cleaned text for coref"
 }
 ```
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `201 Created` |
+| Login credentials not accepted | `401 Unauthorized` | 
+
+Example of response data if successful:
 
 ```json
 {
@@ -352,12 +386,6 @@ Response example if successful:
 	"created_by": "admin",
 	"timestamp": "2016-09-02 22:00:00"
 }
-```
-
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
 ```
 
 #### <a name="version-update" style="color: #000;"></a> Update
@@ -372,11 +400,20 @@ Request example:
 
 ```json
 {
-	"name": "Cleaned text"
+	"name": "Diff name"
 }
 ```
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` | 
+| User is not the version creator | `403 Forbidden` |
+| No such version available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```json
 {
@@ -387,18 +424,6 @@ Response example if successful:
 }
 ```
 
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
-```
-
-Response if the user who sent the request is not the creator of this version:
-
-```
-403 Forbidden
-```
-
 #### <a name="version-delete" style="color: #000;"></a> Delete
 
 Parameters in URL:
@@ -407,23 +432,16 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
-Response if successful:
+HTTP responses:
 
-```
-200 OK
-```
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `204 No Content` |
+| Login credentials not accepted | `401 Unauthorized` | 
+| User is not the version creator | `403 Forbidden` |
+| No such version available | `404 Not Found` |
 
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
-```
-
-Response if the user who sent the request is not the creator of this version:
-
-```
-403 Forbidden
-```
+When a version is deleted, all contents associated with that version will be deleted as well. For more details on contents, see the [Content](#api-content) API below.
 
 ### <a name="api-content" style="color: #000;"></a> Content
 
@@ -442,16 +460,17 @@ Parameters in URL:
 | `section` | `int` | The id of the section
 | (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| No such section/ version available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```
 The response body contains the clear text of a certain version of the section. 
-```
-
-Response if no such version for this section available:
-
-```
-404 Not Found
 ```
 
 #### <a name="content-aggregate" style="color: #000;"></a> Aggregate Text
@@ -463,19 +482,19 @@ Parameters in URL:
 | `section` | `int` | The id of the section
 | (*optional) `version` | `int` | The id of the version. <br> If no version is specified, the raw version will be chosen by default.
 
-Response example if successful:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| No such section/ version available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```
 The response body contains the clear text of a certain version of the section, 
 and ALL ITS DESCENDANTS, in the original page order.
 ```
-
-Response if no such version for this section or any of its descendants available:
-
-```
-404 Not Found
-```
-
 
 #### <a name="content-post" style="color: #000;"></a> Post
 
@@ -488,21 +507,12 @@ Parameters in URL:
 
 The body of the request contains the location of the text file with contents of a specific version of a section, i.e. `output.txt`
 
-Response if successful:
+HTTP responses:
 
-```
-200 OK
-```
-
-Response if login credentials not accepted:
-
-```
-401 Unauthorized
-```
-
-Response if the user who sent the request is not the creator of this version:
-
-```
-403 Forbidden
-```
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` | 
+| User is not the version creator | `403 Forbidden` |
+| No such section/ version available | `404 Not Found` |
 
