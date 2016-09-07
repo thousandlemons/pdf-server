@@ -1,6 +1,5 @@
 import json
 
-from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -15,7 +14,6 @@ from version.serializers import VersionSerializer
 class SectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Section.objects.all()
     serializer_class = SectionSerializer
-    permission_classes = (permissions.AllowAny,)
 
     def children(self, request, pk):
         section = self.get_object()

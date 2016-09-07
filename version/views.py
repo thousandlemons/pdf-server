@@ -4,20 +4,18 @@ from rest_framework import viewsets
 from version.serializers import *
 
 
-class VersionPermission(permissions.IsAuthenticatedOrReadOnly):
+class IsCreatorOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        permitted_by_super = super().has_object_permission(request, view, obj)
+        if request.method in permissions.SAFE_METHODS:
+            return True
 
-        if request.method not in ('POST', 'DELETE'):
-            return permitted_by_super
-
-        return permitted_by_super and obj.created_by == request.user
+        return obj.created_by == request.user
 
 
 class VersionViewSet(viewsets.ModelViewSet):
     queryset = Version.objects.all()
     serializer_class = VersionSerializer
-    permission_classes = (VersionPermission,)
+    permission_classes = (permissions.IsAuthenticated, IsCreatorOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
