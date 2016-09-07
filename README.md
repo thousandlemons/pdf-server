@@ -112,7 +112,7 @@ You can view the progress in the terminal where you started the Django server.
 
 The docs and an emulated client are available at `http://<your-domain>/docs/`
 
-The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are four sub-groups of API endpoints: `Book`, `Section`, `Version` and `Content`.
+The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are four sub-groups of API endpoints: `Book`, `Section`, `Version` and `Content`. Only authenticated users can access any of the APIs listed below.
 
 | Group | URL |
 | --- | --- | 
@@ -123,15 +123,22 @@ The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `htt
 
 ### <a name="api-book" style="color: #000;"></a> Book
 
-| Endpoint | URL | Method | 
-| --- | --- | --- | 
-| [List](#book-list) | `/list/` | GET |
-| [Detail](#book-detail) | `/detail/{pk}/` | GET |
-| [TOC](#book-toc) | `/toc/{pk}/` | GET |
+| Endpoint | URL | Method | Permission |
+| --- | --- | --- | --- |
+| [List](#book-list) | `/list/` | GET | Any user |
+| [Detail](#book-detail) | `/detail/{pk}/` | GET | Any user |
+| [TOC](#book-toc) | `/toc/{pk}/` | GET | Any user |
 
 #### <a name="book-list" style="color: #000;"></a> List
 
-Response example:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` | 
+
+Example of response data if successful:
 
 ```json
 [
@@ -164,7 +171,15 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the book |
 
-Response example:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` | 
+| No such book available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```json
 {
@@ -184,7 +199,15 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the book |
 
-Response example:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
+| No such book available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```json
 {
@@ -226,11 +249,12 @@ This is a nested, recursive JSON that represents the table of content tree. Each
 
 ### <a name="api-section" style="color: #000;"></a> Section
 
-| Endpoint | URL | Method |
-| --- | --- | --- |
-| [Detail](#section-detail) | `/detail/{pk}/` | GET |
-| [Children](#section-children) | `/children/{pk}/` | GET |
-| [Versions](#section-versions) | `/versions/{pk}/` | GET |
+| Endpoint | URL | Method | Permission |
+| --- | --- | --- | --- |
+| [Detail](#section-detail) | `/detail/{pk}/` | GET | Any user |
+| [Children](#section-children) | `/children/{pk}/` | GET | Any user |
+| [Versions](#section-versions) | `/versions/{pk}/` | GET | Any user |
+| [Partial TOC from section](#section-toc) | `/toc/{pk}` | GET | Any user |
 
 #### <a name="section-detail" style="color: #000;"></a> Detail
 
@@ -240,7 +264,15 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the section |
 
-Response example:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
+| No such section available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```json
 {
@@ -258,7 +290,15 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the section |
 
-The response is an array of "Detail"s in the `/detail/{pk}/` API.
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
+| No such section available | `404 Not Found` |
+
+The response is an array of "Detail"s in the `/detail/{pk}/` API denoting the children of the queried section.
 
 #### <a name="section-versions" style="color: #000;"></a> Versions
 
@@ -268,7 +308,15 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the section |
 
-Response example:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
+| No such section available | `404 Not Found` |
+
+Example of response data if successful:
 
 ```json
 [
@@ -289,19 +337,65 @@ Response example:
 
 The response is an array of all the versions associated with the section. See the [Version](#api-version) API below for more details.
 
+#### <a name="section-toc" style="color: #000;"></a> Partial TOC from section
+
+Parameters in URL:
+
+| Parameter | Type | Explanation | 
+| --- | --- | --- |
+| `pk` | `int` | The id of the section |
+
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
+| No such section available | `404 Not Found` |
+
+Example of response data if successful:
+
+```json
+{
+	"title": "Chapter 1",
+	"id": 26,
+	"children": [
+		{
+			"title": "Section 1.1",
+			"id": 27,
+			"children": []
+		},
+		{
+			"title": "Section 1.2",
+			"id": 28,
+			"children": []
+		}
+	]
+}
+```
+
+The response is the partial TOC starting from the queried section. For more details on TOC, see the [TOC](#book-toc) API (under Book) above.
+
 ### <a name="api-version" style="color: #000;"></a> Version
 
-| Endpoint | URL | Method | Permission | Auth
-| --- | --- | --- | --- | --- |
-| [List](#version-list) | `/list` | GET | None | None
-| [Detail](#version-detail) | `/detail/{pk}/` | GET | None | None
-| [Create](#version-create) | `/create/` | PUT | Any user | Basic
-| [Update](#version-update) | `/update/{pk}/` | POST | Version creator | Basic
-| [Delete](#version-delete) | `/delete/{pk}/` | DELETE | Version creator | Basic
+| Endpoint | URL | Method | Permission |
+| --- | --- | --- | --- |
+| [List](#version-list) | `/list` | GET | Any user |
+| [Detail](#version-detail) | `/detail/{pk}/` | GET | Any user |
+| [Create](#version-create) | `/create/` | PUT | Any user |
+| [Update](#version-update) | `/update/{pk}/` | POST | Version creator |
+| [Delete](#version-delete) | `/delete/{pk}/` | DELETE | Version creator |
 
 #### <a name="version-list" style="color: #000;"></a> List
 
-Response example:
+HTTP responses:
+
+| Case | HTTP Response |
+| --- | --- |
+| Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
+
+Example of response data if successful:
 
 ```json
 [
@@ -339,11 +433,12 @@ Parameters in URL:
 | --- | --- | --- |
 | `pk` | `int` | The id of the version
 
-HTTP response examples:
+HTTP responses:
 
 | Case | HTTP Response |
 | --- | --- |
 | Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
 | No such version available | `404 Not Found` | 
 
 Response data if successful:
@@ -444,11 +539,11 @@ When a version is deleted, all contents associated with that version will be del
 
 ### <a name="api-content" style="color: #000;"></a> Content
 
-| Endpoint | URL | Method | Permission | Auth  
-| --- | --- | --- | --- | --- |
-| [Immediate Text](#content-immediate) | `/immediate/{section}/{version}/` | GET | None | None
-| [Aggregate Text](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | None | None
-| [Post](#content-post) | `/post/{section}/{version}/` | POST | Version creator | Basic
+| Endpoint | URL | Method | Permission |
+| --- | --- | --- | --- |
+| [Immediate Text](#content-immediate) | `/immediate/{section}/{version}/` | GET | Any user | 
+| [Aggregate Text](#content-aggregate) | `/aggregate/{section}/{version}/` | GET | Any user |
+| [Post](#content-post) | `/post/{section}/{version}/` | POST | Version creator |
 
 #### <a name="content-immediate" style="color: #000;"></a> Immediate Text
 
@@ -464,6 +559,7 @@ HTTP responses:
 | Case | HTTP Response |
 | --- | --- |
 | Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
 | No such section/ version available | `404 Not Found` |
 
 Example of response data if successful:
@@ -486,6 +582,7 @@ HTTP responses:
 | Case | HTTP Response |
 | --- | --- |
 | Successful | `200 OK` |
+| Login credentials not accepted | `401 Unauthorized` |
 | No such section/ version available | `404 Not Found` |
 
 Example of response data if successful:
