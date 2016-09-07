@@ -11,19 +11,6 @@ from section.services import get_children, Section
 from version.models import Version
 
 
-class ContentPermission(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        permitted_by_super = super().has_object_permission(request, view, obj)
-
-        if request.method not in ('POST',):
-            return permitted_by_super
-
-        print(obj.version.created_by)
-        print(request.user)
-
-        return permitted_by_super and obj.version.created_by == request.user
-
-
 def _convert_to_int(*args):
     return (int(arg) if arg is not None else None for arg in args)
 
@@ -45,7 +32,7 @@ class PlainTextParser(parsers.BaseParser):
 
 class ContentViewSet(viewsets.GenericViewSet):
     serializer_class = ContentSerializer
-    permission_classes = (permissions.IsAuthenticated, IsCreatorOrReadOnly, )
+    permission_classes = (permissions.IsAuthenticated, IsCreatorOrReadOnly,)
     parser_classes = (PlainTextParser,)
 
     @staticmethod
