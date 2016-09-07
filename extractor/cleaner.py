@@ -72,22 +72,51 @@ KNOWN_REPLACEMENTS = [
 ]
 
 
-def replace_known(m_string):
+def replace_known(text):
     for pair in KNOWN_REPLACEMENTS:
-        m_string = m_string.replace(pair[0], pair[1])
-    return m_string
+        text = text.replace(pair[0], pair[1])
+    return text
 
+
+def remove_extra_newline_space(text):
+    if len(text) > 0 and text[0] == '\n':
+        text = text[1:]
+    text = re.sub(r' +', ' ', text)
+    text = re.sub(r'(?:\n|\r|\r\n?)+', '\n', text)
+    text = '\n'.join(line.strip() for line in text.splitlines())
+    return text
+
+
+def remove_duplicate_lines(text):
+    lines = text.splitlines()
+    cleaned = []
+    line_set = set()
+    for line in lines:
+        if line not in line_set:
+            cleaned.append(line)
+            line_set.add(line)
+    return '\n'.join(cleaned)
+
+
+def remove_lines_without_words_longer_than_3(text):
+    lines = text.splitlines()
+    cleaned = []
+    for line in lines:
+        if re.search('[a-zA-Z]{4,}', line):
+            cleaned.append(line)
+    return '\n'.join(cleaned)
+
+
+def remove_lines_with_no_space(text):
+    lines = text.splitlines()
+    cleaned = []
+    for line in lines:
+        if ' ' in line:
+            cleaned.append(line)
+    return '\n'.join(cleaned)
 
 def replace_non_ascii(m_string):
     return re.sub(r'[^\x00-\x7F]', '', m_string)
-
-
-def remove_multiple_newline(m_string):
-    return re.sub(r'\n\s*\n', '\n', m_string)
-
-
-def remove_multiple_whitespace(m_string):
-    return re.sub(r'\s+', ' ', m_string).strip()
 
 
 def remove_digits(m_string):
@@ -133,17 +162,10 @@ def lemmatize(m_string):
 class Cleaner:
     methods = [
         replace_known,
-        replace_non_ascii,
-        remove_uri,
-        remove_email,
-        remove_stop_words,
-        remove_punctuation_marks,
-        remove_digits,
-        remove_single_letter_words,
-        remove_two_letter_words,
-        remove_multiple_whitespace,
-        remove_multiple_newline,
-        lemmatize
+        remove_extra_newline_space,
+        remove_lines_without_words_longer_than_3,
+        remove_lines_with_no_space,
+        remove_duplicate_lines,
     ]
 
     def set_methods(self, methods):
@@ -155,8 +177,7 @@ class Cleaner:
     def add_methods(self, methods):
         self.methods.extend(methods)
 
-    def clean(self, m_string):
-        result = m_string
+    def clean(self, text):
         for method in self.methods:
-            result = method(result)
-        return result
+            text = method(text)
+        return text
