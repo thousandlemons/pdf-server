@@ -23,6 +23,12 @@ def _recursive_extract(node, source, parent_section, book):
     section = Section.objects.create(book=book, title=node[TITLE], has_children=(len(node[CHILDREN]) != 0))
     section.save()
 
+    # create Content entry
+    version = Version.objects.order_by('id')[0]
+    plain_text = extract_plain_text(os.path.join(source, node['link'])) if parent_section is not None else ''
+    content = Content.objects.create(version=version, section=section, text=plain_text)
+    content.save()
+
     # create Adjacency entry or update Book.root_section
     if parent_section is not None:
         adjacency = Adjacency.objects.create(parent=parent_section, child=section)
@@ -35,12 +41,6 @@ def _recursive_extract(node, source, parent_section, book):
     for child in node[CHILDREN]:
         child_text = _recursive_extract(child, source, section, book)
         text_in_children += child_text
-
-    # create Content entry
-    version = Version.objects.order_by('id')[0]
-    plain_text = extract_plain_text(os.path.join(source, node['link'])) if parent_section is not None else ''
-    content = Content.objects.create(version=version, section=section, text=plain_text)
-    content.save()
 
     # return accumulated text
     return plain_text + text_in_children

@@ -10,7 +10,12 @@ class Content(models.Model):
     text = models.TextField()
 
     def __str__(self):
-        return '{section_title} @ ["{version_name}"]'.format(section_title=self.section.title, version_name=self.version.name)  # string.format() always preferred
+        return '{section} @ ["{version}"] by "{owner}"'.format(section=self.section.title,
+                                                               version=self.version.name,
+                                                               owner=self.version.owner)
 
     class Meta(object):
         unique_together = ('section', 'version')  # added unique together
+
+    def is_owned_by(self, user):
+        return self.version.is_owned_by(user)

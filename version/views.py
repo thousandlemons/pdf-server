@@ -9,7 +9,7 @@ class IsCreatorOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return obj.created_by == request.user
+        return obj.owner == request.user
 
 
 class VersionViewSet(viewsets.ModelViewSet):
@@ -18,4 +18,4 @@ class VersionViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated, IsCreatorOrReadOnly,)
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        serializer.save(owner=self.request.user)

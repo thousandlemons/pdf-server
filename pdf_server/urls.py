@@ -16,8 +16,6 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-API_ROOT_V1 = 'api/v1/'
-
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^docs/', include('rest_framework_swagger.urls')),
