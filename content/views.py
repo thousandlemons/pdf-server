@@ -20,7 +20,7 @@ class IsCreatorOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        return obj.version.created_by == request.user
+        return obj.version.owner == request.user
 
 
 class PlainTextParser(parsers.BaseParser):

@@ -4,7 +4,7 @@ from version.models import *
 
 
 class VersionSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(source='created_by.username')
+    owner = serializers.ReadOnlyField(source='owner.username')
 
     def update(self, instance, validated_data):
         instance.name = validated_data['name']
