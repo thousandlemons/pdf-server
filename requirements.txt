@@ -1,10 +1,9 @@
-django
-djangorestframework
-django-cors-headers
-wordcloud
+django==1.9.7
+djangorestframework==3.3.3
+django-cors-headers==1.1.0
+wordcloud==1.2.1
 Pillow
 nltk
-beautifulsoup4
-python-slugify
+beautifulsoup4==4.5.1
 django-rest-swagger==0.3.7
 numpy
