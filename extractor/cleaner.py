@@ -1,5 +1,4 @@
 import re
-import string
 
 from nltk.stem import WordNetLemmatizer
 
@@ -78,6 +77,10 @@ def replace_known(text):
     return text
 
 
+def fix_line_join(text):
+    return re.sub(r'\b- \b', '', text)
+
+
 def remove_extra_newline_space(text):
     if len(text) > 0 and text[0] == '\n':
         text = text[1:]
@@ -115,53 +118,53 @@ def remove_lines_with_no_space(text):
             cleaned.append(line)
     return '\n'.join(cleaned)
 
-def replace_non_ascii(m_string):
-    return re.sub(r'[^\x00-\x7F]', '', m_string)
+
+def remove_non_ascii(text):
+    return re.sub(r'[^\x00-\x7F]', '', text)
 
 
-def remove_digits(m_string):
-    return re.sub(r'\d*', '', m_string)
+def remove_digits(text):
+    return re.sub(r'\d+', ' ', text)
 
 
-def remove_single_letter_words(m_string):
-    return re.sub(r'\W*\b\w\b', ' ', ' ' + m_string + ' ').strip()
+def remove_one_letter_words(text):
+    return re.sub(r'\b[a-zA-Z]\b', ' ', text)
 
 
-def remove_two_letter_words(m_string):
-    return re.sub(r'\W*\b\w{2}\b', ' ', ' ' + m_string + ' ').strip()
+def remove_two_letter_words(text):
+    return re.sub(r'\b[a-zA-Z]{2}\b', ' ', text)
 
 
-def remove_stop_words(m_string):
-    m_string = (' ' + m_string + ' ').lower()
-    for word in CUSTOMIZED_STOP_WORDS:
-        m_string = re.sub(r'\W' + word + '\W', ' ', m_string)
-    return m_string.strip()
+def remove_stop_words(text):
+    for word in MYSQL_STOP_WORDS:
+        text = re.sub(r'\b{word}\b'.format(word=word), '', text, flags=re.IGNORECASE)
+    return text
 
 
-def remove_uri(m_string):
+def remove_uri(text):
     return re.sub(
         r'(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'\".,<>?«»“”‘’]))',
-        '', m_string
+        '', text
     )
 
 
-def remove_email(m_string):
-    return re.sub(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', '', m_string)
+def remove_email(text):
+    return re.sub(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', '', text)
 
 
-def remove_punctuation_marks(m_string):
-    r = re.compile(r'[\s{}]+'.format(re.escape(string.punctuation)))
-    return r.sub(' ', m_string).strip()
+def remove_punctuation_marks(text):
+    return re.sub(r'[^\w\s]', ' ', text)
 
 
-def lemmatize(m_string):
+def lemmatize(text):
     lemmatizer = WordNetLemmatizer()
-    return ' '.join(lemmatizer.lemmatize(word) for word in m_string.split())
+    return ' '.join(lemmatizer.lemmatize(word) for word in text.split())
 
 
 class Cleaner:
     methods = [
         replace_known,
+        fix_line_join,
         remove_extra_newline_space,
         remove_lines_without_words_longer_than_3,
         remove_lines_with_no_space,
