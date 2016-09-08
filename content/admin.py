@@ -3,7 +3,7 @@ from django.contrib.admin import SimpleListFilter
 
 from book.models import Book
 from content.models import Content
-from pdf_server.admin import ObjectLevelPermissionAdmin
+from pdf_server.admin import OwnerAndSuperuserOnlyAdmin
 
 
 class BookListFilter(SimpleListFilter):
@@ -22,7 +22,7 @@ class BookListFilter(SimpleListFilter):
 
 
 @admin.register(Content)
-class ContentAdmin(ObjectLevelPermissionAdmin):
+class ContentAdmin(OwnerAndSuperuserOnlyAdmin):
     model_class = Content
 
     list_display = ('id', 'section', 'version')

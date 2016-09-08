@@ -1,19 +1,19 @@
 from django.contrib import admin
-from pdf_server.admin import ObjectLevelPermissionAdmin
 
+from pdf_server.admin import OwnerAndSuperuserOnlyAdmin
 from version.models import Version
 
 
 @admin.register(Version)
-class VersionAdmin(ObjectLevelPermissionAdmin):
+class VersionAdmin(OwnerAndSuperuserOnlyAdmin):
     model_class = Version
 
     list_display = ('name', 'id', 'owner', 'timestamp')
     readonly_fields = ('owner', 'timestamp')
 
-    list_filter = ('owner', )
+    list_filter = ('owner',)
 
-    search_fields = ('name', )
+    search_fields = ('name',)
 
     def save_model(self, request, obj, form, change):
         # change = not add
