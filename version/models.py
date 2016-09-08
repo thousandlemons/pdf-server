@@ -8,7 +8,7 @@ class Version(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "{name} [{id}]".format(name=self.name, id=self.id)
+        return "[{id}] {name} by {owner}".format(name=self.name, id=self.id, owner=self.owner.username if self.owner else "default")
 
     def is_owned_by(self, user):
         return user == self.owner

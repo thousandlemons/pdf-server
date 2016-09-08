@@ -9,7 +9,7 @@ class Section(models.Model):
     has_children = models.BooleanField()
 
     def __str__(self):
-        return "{book_title} - {section_title}".format(book_title=self.book.title, section_title=self.title)
+        return "{book} - [{id}] {title}".format(book=self.book, id=self.id, title=self.title)
 
 
 class Adjacency(models.Model):
