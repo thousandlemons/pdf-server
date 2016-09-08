@@ -1,5 +1,5 @@
 from django.contrib import admin
-from pdf_viewer_server.admin import SuperuserOnlyAdmin
+from pdf_server.admin import SuperuserOnlyAdmin
 
 from section.models import *
 

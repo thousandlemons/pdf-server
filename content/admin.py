@@ -3,7 +3,7 @@ from django.contrib.admin import SimpleListFilter
 
 from book.models import Book
 from content.models import Content
-from pdf_viewer_server.admin import ObjectLevelPermissionAdmin
+from pdf_server.admin import ObjectLevelPermissionAdmin
 
 
 class BookListFilter(SimpleListFilter):

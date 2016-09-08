@@ -70,7 +70,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pdf_viewer_server.urls'
+ROOT_URLCONF = 'pdf_server.urls'
 
 TEMPLATES = [
     {
@@ -94,7 +94,7 @@ REST_FRAMEWORK = {
     )
 }
 
-WSGI_APPLICATION = 'pdf_viewer_server.wsgi.application'
+WSGI_APPLICATION = 'pdf_server.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases

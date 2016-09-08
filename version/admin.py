@@ -1,5 +1,5 @@
 from django.contrib import admin
-from pdf_viewer_server.admin import ObjectLevelPermissionAdmin
+from pdf_server.admin import ObjectLevelPermissionAdmin
 
 from version.models import Version
 
