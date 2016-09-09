@@ -63,7 +63,7 @@ class ContentViewSet(viewsets.GenericViewSet):
     def _recursive_aggregate(section_pk, version_pk):
         content = ContentViewSet._get_content_or_404(section_pk, version_pk)
         return content.text + '\n' + '\n'.join(
-            ContentViewSet._get_content_or_404(child.pk, version_pk).text for child in
+            ContentViewSet._recursive_aggregate(child.id, version_pk) for child in
             get_children(Section.objects.get(id=section_pk)))
 
     def aggregate(self, request, section_pk, version_pk=None):
