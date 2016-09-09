@@ -18,7 +18,7 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^docs/', include('rest_framework_swagger.urls')),
+    url(r'^docs/', include('rest_framework_docs.urls')),
     url(r'^api/v1/', include('api.urls')),
 
 ]

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # docs
-    'rest_framework_swagger',
+    'rest_framework_docs',
 
     # custom
     'api',
