@@ -79,6 +79,14 @@ $ python3 manage.py createsuperuser
 
 If you didn't know about this yet, please learn Django first before trying the following steps. See [Introduction](#intro).
 
+### Object-level Authentication and User Groups
+
+The server manages authentication at the object level - each Book/ Section/ Version/ Content object is only visible to certain users, among those only certain users are able to edit the object. Authentication is done through extending two classes `OwnerAndSuperuserOnlyAdmin` and `SuperuserOnlyAdmin` in the module `pdf_server.admin`.
+
+To facilitate authentication, users are split into two groups: Superusers (can do anything), and Normal users (can only create, cannot edit certain objects unless is object creator).
+
+More information on the authentication and user groups can be found in the source code, as well as the [API](#api) documentation below.
+
 ### Create an Entry for the `Book` Model
 
 The following fields are required to create a new entry.
@@ -112,7 +120,7 @@ You can view the progress in the terminal where you started the Django server.
 
 The docs and an emulated client are available at `http://<your-domain>/docs/`
 
-The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are four sub-groups of API endpoints: `Book`, `Section`, `Version` and `Content`. Only authenticated users can access any of the APIs listed below.
+The root URL of all RESTful APIs is `/api/v1` (e.g. the book-list api is at `http://<your-admin>/api/v1/book/list/`). There are four sub-groups of API endpoints: `Book`, `Section`, `Version` and `Content`. Only authenticated users can access any of the APIs listed below (authentication is done using Django's basic authentication service).
 
 | Group | URL |
 | --- | --- | 
