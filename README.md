@@ -1,5 +1,7 @@
 # PDF Server
 
+#### *<mark>[NEW]</mark> Python client-side library available [here](https://github.com/nathanielove/pdf-client)*
+
 ## Structure of This Document
 
 * [Introduction](#intro)
