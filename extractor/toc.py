@@ -34,7 +34,7 @@ SLUGIFIED = 'slugified'
 
 
 def _get_list_from_html(book_title, toc_html_path):
-    file = open(toc_html_path, 'r')
+    file = open(toc_html_path, 'r', encoding='utf-8')
     html_content = file.read()
     soup = BeautifulSoup(html_content, 'html.parser')
     tags = soup.find_all(attrs={
