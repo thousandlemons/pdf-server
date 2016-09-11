@@ -58,16 +58,19 @@ class ObjectLevelPermissionAdmin(admin.ModelAdmin):
         """
         return request.user.is_superuser
 
-    def get_fields(self, request, obj=None):
-        """Override. Remove self.superuser_only_fields from super().get_fields()
-
-        """
-        fields = super(ObjectLevelPermissionAdmin, self).get_fields(request, obj)
+    def _remove_superuser_only_fields_from(self, request, fields):
         if not self.is_superuser(request):
             for field in self.get_superuser_only_fields():
                 if field in fields:
                     fields.remove(field)
         return fields
+
+    def get_fields(self, request, obj=None):
+        """Override. Remove self.superuser_only_fields from super().get_fields()
+
+        """
+        fields = super(ObjectLevelPermissionAdmin, self).get_fields(request, obj)
+        return self._remove_superuser_only_fields_from(request, fields)
 
     def get_readonly_fields(self, request, obj=None):
         """Override. Mark all fields as read-only if no delete permission (creator/superuser)
@@ -77,6 +80,13 @@ class ObjectLevelPermissionAdmin(admin.ModelAdmin):
             return self.readonly_fields
 
         return [f.name for f in self.model._meta.fields]
+
+    def get_list_display(self, request):
+        """Override. Remove self.superuser_only_fields from super().get_list_display()
+
+        """
+        fields = super(ObjectLevelPermissionAdmin, self).get_list_display(request)
+        return self._remove_superuser_only_fields_from(request, fields)
 
     def has_delete_permission(self, request, obj=None):
         """Override. Return True if request.user is the owner of obj, or a superuser
@@ -127,6 +137,7 @@ class OwnerAndSuperuserOnlyAdmin(ObjectLevelPermissionAdmin):
     """Object level permission: only superuser and owners can delete/modify; anyone can create
 
     """
+
     def has_permission(self, request, obj):
         """To use this Admin class, the model class must implement is_owned_by()
 
