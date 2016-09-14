@@ -17,7 +17,7 @@ class SectionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def children(self, request, pk):
         section = self.get_object()
-        children = services.get_children(section)
+        children = section.get_children()
         serializer = self.get_serializer(children, many=True)
         return Response(serializer.data)
 

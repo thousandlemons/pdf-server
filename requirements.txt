@@ -4,3 +4,4 @@ django-cors-headers
 nltk
 beautifulsoup4
 drfdocs
+pypdf2

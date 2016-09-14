@@ -1,8 +1,19 @@
+import re
 from bs4 import BeautifulSoup
 
 from extractor.cleaner import Cleaner
 
 EXCLUDED_P_CLASS = {'top_nav', 'nav'}
+
+
+def get_toc_tags(toc_html_path):
+    with open(toc_html_path, 'r', encoding='utf-8') as file:
+        html_content = file.read()
+    soup = BeautifulSoup(html_content, 'html.parser')
+    tags = soup.find_all(attrs={
+        'class': re.compile('toc\d+')
+    })
+    return tags
 
 
 # extract the plain text content of html page

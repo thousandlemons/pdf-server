@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from content.models import Content
 from content.serializers import ContentSerializer
-from section.services import get_children, Section
+from section.models import Section
 from version.models import Version
 
 
@@ -64,7 +64,7 @@ class ContentViewSet(viewsets.GenericViewSet):
         text = ContentViewSet._get_content_or_404(section_pk, version_pk).text.strip()
         descendants = '\n'.join(
             ContentViewSet._recursive_aggregate(child.id, version_pk) for child in
-            get_children(Section.objects.get(id=section_pk))).strip()
+            Section.objects.get(id=section_pk).get_children()).strip()
 
         if not text:
             return descendants

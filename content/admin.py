@@ -41,7 +41,7 @@ class OwnerListFilter(SimpleListFilter):
 class ContentAdmin(OwnerAndSuperuserOnlyAdmin):
     model_class = Content
 
-    list_display = ('id', 'section', 'version')
+    list_display = ('id', 'section', 'book', 'version')
     list_filter = (BookListFilter, OwnerListFilter, 'version',)
 
     search_fields = ('text',)

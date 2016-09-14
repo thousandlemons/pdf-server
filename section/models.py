@@ -6,18 +6,15 @@ from book.models import Book
 class Section(models.Model):
     book = models.ForeignKey(Book)
     title = models.TextField()
+    page = models.IntegerField()
     has_children = models.BooleanField()
 
+    parent = models.ForeignKey('Section', related_name='parent_section', null=True)
+    previous = models.ForeignKey('Section', related_name='previous_section', null=True)
+    next = models.ForeignKey('Section', related_name='next_section', null=True)
+
     def __str__(self):
-        return "{book} - [{id}] {title}".format(book=self.book, id=self.id, title=self.title)
+        return "[{id}] {title}".format(id=self.id, title=self.title)
 
-
-class Adjacency(models.Model):
-    parent = models.ForeignKey(Section, related_name='parent')
-    child = models.ForeignKey(Section, related_name='child')
-
-    def get_book(self):
-        return self.parent.book
-
-    class Meta:
-        unique_together = ('parent', 'child')
+    def get_children(self):
+        return Section.objects.filter(parent=self)

@@ -19,3 +19,6 @@ class Content(models.Model):
 
     def is_owned_by(self, user):
         return self.version.is_owned_by(user)
+
+    def book(self):
+        return self.section.book
