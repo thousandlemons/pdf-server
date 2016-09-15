@@ -17,7 +17,7 @@ class BookAdmin(SuperuserOnlyAdmin):
 
     exclude = ('root_section',)
     list_display = ('title', 'id', 'is_processed')
-    readonly_fields = ('id', 'number_of_pages', 'is_processed', 'root_section_id', 'toc_json')
+    readonly_fields = ('id', 'pages', 'is_processed', 'root_section_id', 'toc_json')
     search_fields = ('title',)
     ordering = ('title',)
     list_filter = ('is_processed',)

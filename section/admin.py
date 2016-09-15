@@ -10,7 +10,7 @@ class SectionAdmin(SuperuserOnlyAdmin):
 
     list_display = ('id', 'title', 'book', 'page', 'has_children')
     readonly_fields = ('book', 'page', 'has_children', 'parent', 'previous', 'next')
-    search_fields = ('title', 'book')
+    search_fields = ('title', )
     list_filter = ('book',)
 
     def has_add_permission(self, request):

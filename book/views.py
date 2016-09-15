@@ -24,7 +24,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
 
         if from_ is None and to is None:
             page_from = 1
-            page_to = book.number_of_pages
+            page_to = book.pages
         else:
             page_from = int(from_) if from_ else 1
             page_to = int(to) if to else page_from
@@ -32,7 +32,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         if not book.page_numbers_in_range(page_from, page_to):
             raise Http404
 
-        if page_from == 1 and page_to == book.number_of_pages:
+        if page_from == 1 and page_to == book.pages:
             stream = open(book.pdf_path, 'rb')
         else:
             data = extractor.pdf.get_pages(book.pdf_path, page_from, page_to)

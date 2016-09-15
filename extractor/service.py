@@ -81,7 +81,7 @@ def _recursive_reconstruct_tree(current, section):
 
 def extract(book):
     # update total number of pages
-    book.number_of_pages = extractor.pdf.get_num_of_pages(book.pdf_path)
+    book.pages = extractor.pdf.get_num_of_pages(book.pdf_path)
     book.save()
 
     # get variables
