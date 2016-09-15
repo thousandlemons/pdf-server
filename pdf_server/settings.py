@@ -24,8 +24,6 @@ SECRET_KEY = 'r2oy-d9&fk%!&hn1h8)ah=it42=@)hz6&ja@7s66_8$*6vg*5#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 # Application definition
@@ -150,4 +148,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 PROJECT_ROOT = os.path.normpath(os.path.dirname(__file__))
-STATIC_ROOT = os.path.abspath('/var/www/pdf-server/static')
